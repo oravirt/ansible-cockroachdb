@@ -3,15 +3,15 @@
 
 DOCUMENTATION = '''
 ---
-module: oracle_services
-short_description: Manage services in an Oracle database
+module: cockroach_db
+short_description: Manage databases in a cockroach cluster
 description:
-    - Manage services in an Oracle database (using srvctl)
+    - Manage databases in a cockroach cluster
 version_added: "2.1.0.0"
 options:
     name:
         description:
-            - The name of the service
+            - The name of the database
         required: true
         default: None
 
@@ -21,10 +21,10 @@ author: Mikael Sandström, oravirt@gmail.com, @oravirt
 
 EXAMPLES = '''
 # Create a database
-cockroach_db: name=testdb1 state=present
+cockroach_db: name=db1 path=/var/lib/cockroach host={{ inventory_hostname }} state=present
 
 # Drop a database
-cockroach_db: name=testdb1 state=absent
+cockroach_db: name=db1 path=/var/lib/cockroach host={{ inventory_hostname }} state=absent
 
 '''
 import os

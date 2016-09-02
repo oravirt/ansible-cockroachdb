@@ -3,10 +3,10 @@
 
 DOCUMENTATION = '''
 ---
-module: oracle_services
-short_description: Manage services in an Oracle database
+module: cockroach_cluster
+short_description: Manage a cockroach cluster
 description:
-    - Manage services in an Oracle database (using srvctl)
+    - Manage a cockroach cluster
 version_added: "2.1.0.0"
 options:
     name:
@@ -20,11 +20,11 @@ author: Mikael Sandström, oravirt@gmail.com, @oravirt
 '''
 
 EXAMPLES = '''
-# Create a database
-cockroach_db: name=testdb1 state=present
+# Create a master node
+cockroach_cluster: path=/var/lib/cockroach host={{ inventory_hostname }} state=started
 
-# Drop a database
-cockroach_db: name=testdb1 state=absent
+# Join a node to a cluster
+cockroach_cluster: path=/var/lib/cockroach host={{ inventory_hostname }} join=True cluster_master=node1:{{ port }} state=started
 
 '''
 import os
@@ -33,7 +33,6 @@ import os
 # Check if the service exists
 def check_node_started(module, msg, path):
 
-    #command = "ps -ef |grep %s/cockroach |grep -v grep |wc -l " % (path)
     command = "ps -ef"
     (rc, stdout, stderr) = module.run_command(command)
     searchstring = '%s/cockroach' % (path)
