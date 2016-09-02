@@ -1,0 +1,23 @@
+---
+
+  - name: Generic host setup
+    hosts: all
+    become: true
+    roles:
+      - host-setup
+
+
+  - name: Install CockroachDB
+    hosts: cockroach
+    become: true
+    roles:
+      - cockroach-install
+      - cockroach-cluster
+      - cockroach-db
+
+
+  - name: Install Nginx
+    hosts: lb
+    become: true
+    roles:
+      - nginx-lb

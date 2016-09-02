@@ -1,0 +1,45 @@
+# For more information on configuration, see:
+#   * Official English Documentation: http://nginx.org/en/docs/
+#   * Official Russian Documentation: http://nginx.org/ru/docs/
+
+user              nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log;
+#error_log  /var/log/nginx/error.log  notice;
+#error_log  /var/log/nginx/error.log  info;
+
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    upstream lb_admin {
+    {% for host in groups['cockroach'] %}
+   	server {{ hostvars[host].ansible_ssh_host }}:8080 ;
+    {% endfor %}
+    }
+    upstream lb_db {
+    {% for host in groups['cockroach'] %}
+   	server {{ hostvars[host].ansible_ssh_host }}:26257 ;
+    {% endfor %}
+    }
+
+    server {
+        listen 8080;
+        server_name lb;
+        location / {
+            proxy_pass http://lb_admin;
+        }
+    }
+    server {
+        listen 26257;
+        server_name lb;
+        location / {
+            proxy_pass http://lb_db;
+        }
+    }
+}

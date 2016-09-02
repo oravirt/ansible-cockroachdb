@@ -1,0 +1,9 @@
+---
+# defaults file for cockroach
+
+binary_url: https://binaries.cockroachdb.com
+binary_version: cockroach-latest.linux-amd64.tgz
+install_location: /var/lib/cockroach
+install_version: cockroach-latest.linux-amd64
+cockroach_port: 26257
+http_port: 8080

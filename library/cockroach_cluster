@@ -1,0 +1,169 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+DOCUMENTATION = '''
+---
+module: oracle_services
+short_description: Manage services in an Oracle database
+description:
+    - Manage services in an Oracle database (using srvctl)
+version_added: "2.1.0.0"
+options:
+    name:
+        description:
+            - The name of the service
+        required: true
+        default: None
+
+notes:
+author: Mikael Sandström, oravirt@gmail.com, @oravirt
+'''
+
+EXAMPLES = '''
+# Create a database
+cockroach_db: name=testdb1 state=present
+
+# Drop a database
+cockroach_db: name=testdb1 state=absent
+
+'''
+import os
+
+
+# Check if the service exists
+def check_node_started(module, msg, path):
+
+    #command = "ps -ef |grep %s/cockroach |grep -v grep |wc -l " % (path)
+    command = "ps -ef"
+    (rc, stdout, stderr) = module.run_command(command)
+    searchstring = '%s/cockroach' % (path)
+    if rc != 0:
+        msg[0] = "Something went wrong, stderr: %s" % (stderr)
+
+    if searchstring in stdout.lower():
+        return True
+    else:
+        return False
+
+def start_node(module, msg, path, store, host, port, http_port, join, cluster_master):
+
+    command = "nohup %s/cockroach start --http-port=%s --port=%s --host=%s " % (path, http_port, port, host)
+    if store:
+        command += ' --store=%s' % (store)
+    if join:
+        command += ' --join=%s:%s' % (cluster_master,port)
+    command += ' --insecure --background'
+
+    #module.exit_json(msg=command)
+    (rc, stdout, stderr) = module.run_command(command)
+    if rc != 0:
+        msg[0] = "Starting failed. %s" % (stderr)
+        return False
+    else:
+        msg[0] = 'Successfully started node - %s ' % (stdout)
+        return True
+
+def stop_node(module, msg, path, host, port):
+
+    command = "%s/cockroach quit --host=%s --port=%s" % (path, host, port)
+    (rc, stdout, stderr) = module.run_command(command)
+    if rc != 0:
+        msg[0] = "Failed to stop node. %s" % (stderr)
+        return False
+    else:
+        msg[0] = 'Successfully stopped node - %s' % (stdout.strip())
+        return True
+
+def status_node(module, msg, path):
+
+    command = "%s/cockroach node status" % (path)
+    (rc, stdout, stderr) = module.run_command(command)
+    if rc != 0:
+        msg[0] = "Failed to check status for node: %s" % (stderr)
+        return False
+    else:
+        msg[0] = stdout
+        return True
+
+def main():
+
+    msg = ['']
+
+    module = AnsibleModule(
+        argument_spec = dict(
+            store           = dict(required=False),
+            state           = dict(default="started", choices = ["started", "stopped", "status"]),
+            path            = dict(required=False),
+            port            = dict(default=26257),
+            http_port       = dict(default=8080),
+            host            = dict(default='localhost'),
+            join            = dict(required=False, type='bool'),
+            cluster_master  = dict(required=False),
+
+
+        ),
+
+    )
+
+    store           = module.params["store"]
+    state           = module.params["state"]
+    path            = module.params["path"]
+    port            = module.params["port"]
+    http_port       = module.params["http_port"]
+    host            = module.params["host"]
+    join            = module.params["join"]
+    cluster_master  = module.params["cluster_master"]
+
+
+    if not path:
+        try:
+            command = "cockroach version"
+            module.run_command(command)
+        except OSError as e:
+            msg[0] = 'Couldnt find cockroach executable. Check the path. stderr: %s' % (e)
+            module.fail_json(msg=msg[0], failed=True)
+
+    if not store:
+        store = '%s/cockroach-data' % (path)
+
+
+    if state == 'started':
+        if not check_node_started(module, msg, path):
+            if start_node(module, msg, path, store, host, port, http_port, join, cluster_master):
+                module.exit_json(msg=msg[0], changed=True)
+            else:
+                module.fail_json(msg=msg[0], changed=False)
+        else:
+            msg[0] = 'Already running'
+            module.exit_json(msg=msg[0], changed=False)
+
+    elif state == 'stopped':
+        if check_node_started(module, msg, path):
+            if stop_node(module, msg, path, host, port):
+            #msg[0] = 'Successfully dropped database %s ' % (name)
+                module.exit_json(msg=msg[0], changed=True)
+            else:
+                module.fail_json(msg=msg[0], changed=False)
+        else:
+             msg[0] = 'Node already stopped'
+             module.exit_json(msg=msg[0], changed=False)
+
+    elif state == 'status':
+        if check_node_started(module, msg, path):
+            if status_node(module, msg, path, port, host):
+                #msg[0] = 'Successfully dropped database %s ' % (name)
+                module.exit_json(msg=msg[0], changed=False)
+            else:
+                module.fail_json(msg=msg[0], changed=False)
+        else:
+             msg[0] = 'Node not running'
+             module.exit_json(msg=msg[0], changed=False)
+
+    module.exit_json(msg="Unhandled exit", changed=False)
+
+
+
+
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()

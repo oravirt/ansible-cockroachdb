@@ -1,0 +1,4 @@
+---
+# defaults file for cockroach-db
+databases:
+      - testdb1

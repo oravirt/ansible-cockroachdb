@@ -1,0 +1,3 @@
+---
+# defaults file for host-setup
+sync_clocks: False

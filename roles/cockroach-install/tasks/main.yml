@@ -1,0 +1,24 @@
+---
+# tasks file for cockroach
+
+- name: Create installation directory
+  file: name={{ install_location }} state=directory
+  tags: directories
+
+- name: Get installation files
+  get_url: url="{{ binary_url }}/{{ binary_version }}" dest="/tmp/{{ binary_version }}" validate_certs=false
+  #shell: "wget {{ binary_url }}/{{ binary_version }} -O /tmp/{{ binary_version }}"
+  tags: download
+
+- name: Unpack/install binaries
+  unarchive: src=/tmp/{{ binary_version }} dest={{ install_location }} copy=no
+  tags: install
+
+- name: test the installation
+  shell: "{{ install_location }}/{{ install_version}}/cockroach version"
+  register: cversion
+  tags: test
+
+- name: print output
+  debug: var=cversion.stdout_lines
+  tags: test

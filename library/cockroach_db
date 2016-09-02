@@ -1,0 +1,128 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+DOCUMENTATION = '''
+---
+module: oracle_services
+short_description: Manage services in an Oracle database
+description:
+    - Manage services in an Oracle database (using srvctl)
+version_added: "2.1.0.0"
+options:
+    name:
+        description:
+            - The name of the service
+        required: true
+        default: None
+
+notes:
+author: Mikael Sandström, oravirt@gmail.com, @oravirt
+'''
+
+EXAMPLES = '''
+# Create a database
+cockroach_db: name=testdb1 state=present
+
+# Drop a database
+cockroach_db: name=testdb1 state=absent
+
+'''
+import os
+
+
+# Check if the service exists
+def check_database_exists(module, msg, path, host, port, name):
+
+    command = "%s/cockroach sql --host=%s --port=%s --execute \"show databases\"" % (path, host, port)
+    (rc, stdout, stderr) = module.run_command(command)
+    #module.exit_json(msg=rc)
+    if rc != 0:
+        msg[0] = "Something went wrong, stderr: %s" % (stderr)
+
+    if name.lower() in stdout.lower():
+        return True
+    else:
+        return False
+
+def create_database(module, msg, path, host, port, name):
+    command = "%s/cockroach sql --host=%s --port=%s --execute \"create database %s\" " % (path, host, port, name)
+    #command += ' --execute \"create database %s\"' (name)
+    (rc, stdout, stderr) = module.run_command(command)
+    if rc != 0:
+        msg[0] = "Creating database %s failed. %s" % (name, stderr)
+        return False
+    else:
+        return True
+
+def remove_database(module, msg, path, host, port, name):
+
+    command = "%s/cockroach sql --host=%s --port=%s --execute \"drop database %s\" " % (path, host, port, name)
+    (rc, stdout, stderr) = module.run_command(command)
+    if rc != 0:
+        msg[0] = "Removing database %s failed: %s" % (name, stderr)
+        return False
+    else:
+        return True
+
+def main():
+
+    msg = ['']
+
+    module = AnsibleModule(
+        argument_spec = dict(
+            name      = dict(required=True, aliases = ['database_name','db']),
+            host      = dict(required=False, default='localhost'),
+            port      = dict(required=False, default=26257),
+            state     = dict(default="present", choices = ["present", "absent"]),
+            path      = dict(required=False),
+
+        ),
+
+    )
+
+    name       = module.params["name"]
+    host       = module.params["host"]
+    port       = module.params["port"]
+    state      = module.params["state"]
+    path       = module.params["path"]
+
+
+    if not path:
+        try:
+            command = "cockroach version"
+            module.run_command(command)
+        except OSError as e:
+            msg[0] = 'Couldnt find cockroach executable. Check the path. stderr: %s' % (e)
+            module.fail_json(msg=msg[0], failed=True)
+
+    if state == 'present':
+        if not check_database_exists(module, msg, path, host, port, name):
+            if create_database(module, msg, path, host, port, name):
+                msg[0] = 'Successfully created database %s ' % (name)
+                module.exit_json(msg=msg[0], changed=True)
+            else:
+                module.fail_json(msg=msg[0], changed=False)
+        else:
+            msg[0] = 'Database %s already exists' % (name)
+            module.exit_json(msg=msg[0], changed=False)
+
+    elif state == 'absent':
+        if check_database_exists(module, msg, path, host, port, name):
+            if remove_database(module, msg, path, host, port, name):
+                msg[0] = 'Successfully dropped database %s ' % (name)
+                module.exit_json(msg=msg[0], changed=True)
+            else:
+                module.fail_json(msg=msg[0], changed=False)
+        else:
+            msg[0] = 'Database %s doesn\'t exist' % (name)
+            module.exit_json(msg=msg[0], changed=False)
+
+
+    module.exit_json(msg="Unhandled exit", changed=False)
+
+
+
+
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()
