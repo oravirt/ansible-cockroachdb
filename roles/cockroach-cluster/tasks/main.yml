@@ -20,8 +20,10 @@
 - name: Check status
   shell: "{{ install_location }}/{{ install_version }}/cockroach node status --host {{ inventory_hostname }}"
   register: status
+  when: check_status
   tags: join_cluster,start_cluster,status
 
 - name: Check status
   debug: var=status.stdout_lines
+  when: check_status
   tags: join_cluster,start_cluster,status

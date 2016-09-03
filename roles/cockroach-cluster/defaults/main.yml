@@ -2,3 +2,4 @@
 # defaults file for cockroach-cluster
  cluster_master: "{{play_hosts[0]}}"
  stop_cluster: False
+ check_status: False
