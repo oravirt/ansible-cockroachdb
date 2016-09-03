@@ -35,7 +35,7 @@ Ansible is also installed in the Vagrant box that is specified, so it is also po
 Just make the insecure_private_key available to the VM, make sure the permissions are 0600 or 0400 and run the playbook.
 
 e.g
-vagrant ssh lb
-cp /vagrant/insecure_private_key .
-chmod 0400 insecure_private_key
-ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook /vagrant/install-cockroachdb.yml -i /vagrant/inventory
+- vagrant ssh lb
+- cp /vagrant/insecure_private_key .
+- chmod 0400 insecure_private_key
+- ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook /vagrant/install-cockroachdb.yml -i /vagrant/inventory
