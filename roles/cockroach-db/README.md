@@ -11,7 +11,7 @@ Needs a running cluster
 
 Role Variables
 --------------
-databases: A list of databases to create
+- databases: A list of databases to create
 
 Dependencies
 ------------

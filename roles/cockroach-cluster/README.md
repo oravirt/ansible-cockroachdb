@@ -12,8 +12,8 @@ An installation of cockroachdb
 
 Role Variables
 --------------
-master_node: The first node to start in the cluster. Defaults to the first node in the group
-stop_cluster: true/false. Set to False. Just there in case you want to stop the cluster
+- master_node: The first node to start in the cluster. Defaults to the first node in the group
+- stop_cluster: true/false. Set to False. Just there in case you want to stop the cluster
 
 Dependencies
 ------------
