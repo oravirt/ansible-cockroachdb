@@ -14,6 +14,10 @@
   unarchive: src=/tmp/{{ binary_version }} dest={{ install_location }} copy=no
   tags: install
 
+- name: create symlink to /usr/local/bin
+  file: src={{ install_location }}/{{ install_version}}/cockroach dest=/usr/local/bin/cockroach state=link
+  tags: link
+
 - name: test the installation
   shell: "{{ install_location }}/{{ install_version}}/cockroach version"
   register: cversion
