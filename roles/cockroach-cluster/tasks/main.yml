@@ -5,11 +5,15 @@
   when: stop_cluster
   tags: stop_cluster,restart_cluster
 
+- name: Waiting for port to be released
+  wait_for: port={{ cockroach_port }} state=stopped
+  when: stop_cluster
+  tags: stop_cluster,restart_cluster
+
 - name: Start master node
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} state=started
   when: inventory_hostname == cluster_master
-  tags:
-     - start_cluster,restart_cluster
+  tags: start_cluster,restart_cluster
 
 - name: Start other nodes
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} join=True cluster_master={{ cluster_master }} state=started
