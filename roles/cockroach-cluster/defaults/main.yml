@@ -3,3 +3,4 @@
  cluster_master: "{{play_hosts[0]}}"
  stop_cluster: False
  check_status: False
+ reinstall_cluster: False

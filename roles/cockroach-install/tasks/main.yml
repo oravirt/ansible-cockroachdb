@@ -1,6 +1,17 @@
 ---
 # tasks file for cockroach
 
+- name: Remove installation directory
+  file: name={{ install_location }} state=absent
+  when: reinstall_cluster
+  tags: remove_cluster
+
+- name: remove symlink from /usr/local/bin
+  file: src={{ install_location }}/{{ install_version}}/cockroach dest=/usr/local/bin/cockroach state=absent
+  when: reinstall_cluster
+  tags: remove_cluster
+
+
 - name: Create installation directory
   file: name={{ install_location }} state=directory
   tags: directories

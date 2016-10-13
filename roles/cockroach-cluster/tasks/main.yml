@@ -3,19 +3,18 @@
 - name: Stop cluster
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} state=stopped
   when: stop_cluster
-  tags: stop_cluster
+  tags: stop_cluster,restart_cluster
 
 - name: Start master node
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} state=started
   when: inventory_hostname == cluster_master
   tags:
-     - start_cluster
-     - master_node
+     - start_cluster,restart_cluster
 
 - name: Start other nodes
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} join=True cluster_master={{ cluster_master }} state=started
   when: inventory_hostname != cluster_master
-  tags: join_cluster,start_cluster
+  tags: join_cluster,start_cluster,restart_cluster
 
 - name: Check status
   shell: "{{ install_location }}/{{ install_version }}/cockroach node status --host {{ inventory_hostname }}"

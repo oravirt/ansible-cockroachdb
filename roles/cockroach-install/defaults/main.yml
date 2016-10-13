@@ -7,3 +7,4 @@ install_location: /var/lib/cockroach
 install_version: cockroach-latest.linux-amd64
 cockroach_port: 26257
 http_port: 8080
+reinstall_cluster: False
