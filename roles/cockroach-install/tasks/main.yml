@@ -1,14 +1,20 @@
 ---
 # tasks file for cockroach
 
+- name: Kill all roaches
+  script: kill-all-roaches.sh
+  when: reinstall_cluster or remove_cluster
+  tags: remove_cluster
+  ignore_errors: true
+
 - name: Remove installation directory
   file: name={{ install_location }} state=absent
-  when: reinstall_cluster
+  when: reinstall_cluster or remove_cluster
   tags: remove_cluster
 
 - name: remove symlink from /usr/local/bin
   file: src={{ install_location }}/{{ install_version}}/cockroach dest=/usr/local/bin/cockroach state=absent
-  when: reinstall_cluster
+  when: reinstall_cluster or remove_cluster
   tags: remove_cluster
 
 
