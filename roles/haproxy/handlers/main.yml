@@ -1,0 +1,4 @@
+---
+# handlers file for nginx-lb
+- name: Restart haproxy
+  service: name=haproxy state=restarted
