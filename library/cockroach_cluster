@@ -44,13 +44,19 @@ def check_node_started(module, msg, path):
     else:
         return False
 
-def start_node(module, msg, path, store, host, port, http_port, join, cluster_master):
+def start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master):
 
     command = "nohup %s/cockroach start --http-port=%s --port=%s --host=%s " % (path, http_port, port, host)
     if store:
         command += ' --store=%s' % (store)
     if join:
         command += ' --join=%s:%s' % (cluster_master,port)
+    if cache:
+        command += ' --cache=%s' % (cache)
+    if locality:
+        command += ' --locality=%s' % (locality)
+    if log_dir:
+        command += ' --log-dir %s' % (log_dir)
     command += ' --insecure --background'
 
     #module.exit_json(msg=command)
@@ -93,6 +99,9 @@ def main():
             store           = dict(required=False),
             state           = dict(default="started", choices = ["started", "stopped", "status"]),
             path            = dict(required=False),
+            cache           = dict(required=False),
+            log_dir         = dict(required=False),
+            locality        = dict(required=False),
             port            = dict(default=26257),
             http_port       = dict(default=8080),
             host            = dict(default='localhost'),
@@ -107,6 +116,9 @@ def main():
     store           = module.params["store"]
     state           = module.params["state"]
     path            = module.params["path"]
+    cache           = module.params["cache"]
+    log_dir         = module.params["log_dir"]
+    locality        = module.params["locality"]
     port            = module.params["port"]
     http_port       = module.params["http_port"]
     host            = module.params["host"]
@@ -128,7 +140,7 @@ def main():
 
     if state == 'started':
         if not check_node_started(module, msg, path):
-            if start_node(module, msg, path, store, host, port, http_port, join, cluster_master):
+            if start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master):
                 module.exit_json(msg=msg[0], changed=True)
             else:
                 module.fail_json(msg=msg[0], changed=False)
