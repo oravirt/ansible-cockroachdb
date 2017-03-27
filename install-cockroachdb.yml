@@ -1,10 +1,10 @@
 ---
 
-  - name: Generic host setup
-    hosts: all
-    become: true
-    roles:
-      - host-setup
+#  - name: Generic host setup
+#    hosts: all
+#    become: true
+#    roles:
+#      - host-setup
 
 
   - name: Install CockroachDB
@@ -16,8 +16,8 @@
       - cockroach-db
 
 
-  - name: Install Nginx
+  - name: Install Loadbalancer
     hosts: lb
     become: true
     roles:
-      - nginx-lb
+      - haproxy
