@@ -6,6 +6,7 @@
       groups: cockroach_master
   with_random_choice: "{{ groups[hostgroup] }}"
   delegate_to: localhost
+  tags: start_cluster,restart_cluster,stop_cluster
 
 - set_fact:
     cluster_master: "{{ groups['cockroach_master'][0] }}"

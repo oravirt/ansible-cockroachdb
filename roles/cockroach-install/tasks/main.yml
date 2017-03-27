@@ -1,6 +1,10 @@
 ---
 # tasks file for cockroach
 
+- name: remove installation files
+  file: path="/tmp/{{ binary_version }}" state=absent
+  tags: remove_install_binaries,remove_cluster
+
 - name: Kill all roaches
   script: kill-all-roaches.sh
   when: reinstall_cluster or remove_cluster
