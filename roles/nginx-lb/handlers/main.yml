@@ -1,4 +1,0 @@
----
-# handlers file for nginx-lb
-- name: Restart nginx
-  service: name=nginx state=restarted

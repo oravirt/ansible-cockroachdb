@@ -1,3 +1,0 @@
----
-# defaults file for nginx-lb
-configure_lb: False
