@@ -15,7 +15,7 @@ global
     #
     log         127.0.0.1 local2
     maxconn     4096
-    stats       socket /etc/haproxy/admin.sock mode 660 level admin
+    stats       socket {{ haproxy_admin_socket }} mode 660 level admin
 
 defaults
     mode                tcp

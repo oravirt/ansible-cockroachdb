@@ -5,3 +5,6 @@
 
 - name: Restart nginx
   service: name=nginx state=restarted
+
+- name: Restart rsyslog
+  service: name=rsyslog state=restarted

@@ -6,3 +6,11 @@ configure_lb: False
 epel_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 cockroach_port: 26257
 adminui_port: 8080
+haproxy_admin_socket: /var/lib/haproxy/admin.sock
+rsyslog_conf:
+    - {path: /etc/rsyslog.conf, regexp: "'^#$UDPServerRun 514", line: "$UDPServerRun 514", insertafter: "# Provides UDP syslog reception"}
+    - {path: /etc/rsyslog.conf, regexp: "'^#$ModLoad imudp", line: "$ModLoad imudp", insertafter: "# Provides UDP syslog reception" }
+
+haproxy_rsyslog_conf:
+       - {type: "local2.=info", logfile: /var/log/haproxy-access.log, enabled: False  }
+       - {type: "local2.notice", logfile: /var/log/haproxy-status.log, enabled: True  }

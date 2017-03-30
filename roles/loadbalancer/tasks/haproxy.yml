@@ -1,15 +1,33 @@
-- name: Install haproxy
+- name: haproxy | Install haproxy
   package: name=haproxy state=installed
   tags: lb
   when: configure_lb
 
-- name: Add haproxy config
+- name: haproxy | Add haproxy config
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
   notify: Restart haproxy
   tags: lb
   when: configure_lb
 
-- name: Start & Enable haproxy
+- name: haproxy | Start & Enable haproxy
   service: name=haproxy state=started enabled=yes
   tags: lb
+  when: configure_lb
+
+- name: haproxy-logging | Enable UDP in rsyslog
+  lineinfile:
+      dest: "{{ item.path }}"
+      insertafter: "{{ item.insertafter }}"
+      line: "{{ item.line }}"
+      state: present
+      backup: yes
+  with_items:
+      - "{{ rsyslog_conf }}"
+  tags: lb,rsyslog_conf
+  when: configure_lb
+
+- name: haproxy-logging | Add haproxy config to rsyslog
+  template: src=rsyslog-haproxy.conf.j2 dest=/etc/rsyslog.d/haproxy.conf backup=yes
+  notify: Restart rsyslog
+  tags: lb, rsyslog_conf
   when: configure_lb
