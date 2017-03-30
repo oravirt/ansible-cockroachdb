@@ -10,6 +10,7 @@
 
 - set_fact:
     cluster_master: "{{ groups['cockroach_master'][0] }}"
+  tags: start_cluster,restart_cluster,stop_cluster
 
 - name: Stop cluster
   cockroach_cluster: path={{ install_location }}/{{ install_version }} host={{ inventory_hostname }} state=stopped
@@ -38,7 +39,7 @@
            host={{ inventory_hostname }}
            join=True
            cluster_master={{ cluster_master }}
-           cache={{ cache_size |default (omit)}}
+           cache={{ caches |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
            state=started
   when: inventory_hostname != cluster_master
