@@ -1,0 +1,36 @@
+
+- name: filesystem | Create partition and pv
+  shell:  parted -a optimal {{ item.device }} "mklabel gpt mkpart primary 1 -1"
+  args:
+       creates: "{{ item.device }}1"
+  with_items:
+          - "{{filesystems}}"
+  when: configure_host_disks
+  tags: hostfs
+
+- name: filesystem | Create vg
+  lvg: vg={{ item.vgname }} pvs="{{ item.device }}1"  state=present
+  with_items: "{{filesystems}}"
+  when: configure_host_disks
+  tags: hostfs
+
+- name: filesystem | create lv
+  lvol: vg={{ item.vgname }} lv={{ item.lvname }} size=100%FREE state=present shrink=no
+  with_items:
+         - "{{filesystems}}"
+  when: configure_host_disks
+  tags: hostfs
+
+- name: filesystem | create fs
+  filesystem: fstype={{ item.fstype }} dev=/dev/{{ item.vgname }}/{{ item.lvname }}
+  with_items:
+      - "{{filesystems}}"
+  when: configure_host_disks
+  tags: hostfs
+
+- name: filesytem | mount dir
+  mount: name={{ item.mountpoint }} src=/dev/{{ item.vgname }}/{{ item.lvname }} dump=1 passno=2 fstype={{ item.fstype }} state=mounted
+  with_items:
+       - "{{filesystems}}"
+  when: configure_host_disks
+  tags: hostfs

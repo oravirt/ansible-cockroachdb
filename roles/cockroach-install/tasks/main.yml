@@ -1,9 +1,18 @@
 ---
 # tasks file for cockroach
+- name: Create directories
+  file: path={{ item.mountpoint }} state=directory owner=root group=root mode=775
+  with_items:
+       - "{{filesystems}}"
+  tags: hostfs
+
+- include: filesystems.yml
+  when: configure_host_disks
 
 - name: remove installation files
   file: path="/tmp/{{ binary_version }}" state=absent
   tags: remove_install_binaries,remove_cluster
+  when: remove_install_binaries
 
 - name: Kill all roaches
   script: kill-all-roaches.sh
