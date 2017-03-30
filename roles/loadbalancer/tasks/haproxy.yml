@@ -1,0 +1,15 @@
+- name: Install haproxy
+  package: name=haproxy state=installed
+  tags: lb
+  when: configure_lb
+
+- name: Add haproxy config
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  notify: Restart haproxy
+  tags: lb
+  when: configure_lb
+
+- name: Start & Enable haproxy
+  service: name=haproxy state=started enabled=yes
+  tags: lb
+  when: configure_lb

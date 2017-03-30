@@ -1,0 +1,8 @@
+---
+# defaults file for loadbalancer
+
+lb_type: haproxy   # haproxy|nginx
+configure_lb: False
+epel_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+cockroach_port: 26257
+adminui_port: 8080

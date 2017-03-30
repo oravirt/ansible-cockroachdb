@@ -1,0 +1,9 @@
+---
+# tasks file for nginx-lb
+
+- name: Start and enable NTP
+  service: name=ntpd  state=started  enabled=yes
+  tags: lb
+  when: configure_lb
+
+- include: "{{ lb_type }}.yml"

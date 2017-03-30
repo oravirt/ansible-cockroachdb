@@ -1,0 +1,52 @@
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+
+    #
+    log         127.0.0.1 local2
+    maxconn     4096
+    stats       socket /etc/haproxy/admin.sock mode 660 level admin
+
+defaults
+    mode                tcp
+    log                 global
+    option              httplog
+    option              dontlognull
+    timeout connect     10s
+    timeout client      1m
+    timeout server      1m
+
+
+listen adminui
+    bind :{{adminui_port}}
+    mode http
+    balance roundrobin
+{% for host in groups['cockroach'] %}
+{% if 'virtualbox' in ansible_virtualization_type %}
+    server {{ host }} {{ hostvars[host]['ansible_all_ipv4_addresses'][1] }}:{{adminui_port}} check
+{% else %}
+    server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:{{adminui_port}} check
+{% endif %}
+{% endfor %}
+
+listen psql
+    bind :{{cockroach_port}}
+    mode tcp
+    balance roundrobin
+{% for host in groups['cockroach'] %}
+{% if 'virtualbox' in ansible_virtualization_type %}
+    server {{ host }} {{ hostvars[host]['ansible_all_ipv4_addresses'][1] }}:{{cockroach_port}} check
+{% else %}
+    server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:{{cockroach_port}} check
+{% endif %}
+{% endfor %}
