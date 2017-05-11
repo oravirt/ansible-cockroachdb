@@ -45,7 +45,7 @@ def check_database_exists(module, msg, path, host, port, name):
         return False
 
 def create_database(module, msg, path, host, port, name):
-    command = "%s/cockroach sql --host=%s --port=%s --execute \"create database %s\" " % (path, host, port, name)
+    command = "%s/cockroach sql --host=%s --port=%s --insecure --execute \"create database %s\" " % (path, host, port, name)
     #command += ' --execute \"create database %s\"' (name)
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:

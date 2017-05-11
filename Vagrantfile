@@ -61,6 +61,7 @@ config.ssh.insert_key = false
       end
     end
   end
+config.vm.provision :shell, :inline => "service network restart"
 # This is the provisioning step performed by Ansible. Uncomment if it should be run as part of vagrant up
 # Since the way the provisioning works with multiple machines, its faster to run the provisioning step manually after the machines are built
 #

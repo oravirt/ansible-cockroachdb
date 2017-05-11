@@ -46,7 +46,7 @@
   tags: join_cluster,start_cluster,restart_cluster
 
 - name: Check status
-  shell: "{{ install_location }}/{{ install_version }}/cockroach node status --host {{ inventory_hostname }}"
+  shell: "{{ install_location }}/{{ install_version }}/cockroach node status --host {{ inventory_hostname }} --insecure"
   register: status
   when: check_status
   tags: join_cluster,start_cluster,status
