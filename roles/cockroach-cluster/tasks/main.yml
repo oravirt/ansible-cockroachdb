@@ -19,6 +19,10 @@
 #   when: not use_random_master
 #   tags: start_cluster,restart_cluster
 
+- name: print cluster_master
+  debug: msg="Cluster Master is {{ cluster_master }}"
+  tags: show_master
+
 - name: Stop cluster
   cockroach_cluster: path={{ install_location }} host={{ inventory_hostname }} state=stopped
   when: stop_cluster
@@ -62,11 +66,11 @@
   shell: "/usr/local/bin/cockroach node status --host {{ inventory_hostname }} --insecure"
   register: status
   when: check_status
-  tags: join_cluster,start_cluster,status
+  tags: join_cluster,start_cluster,status,restart_cluster
   become_user: "{{ cockroach_user }}"
 
 - name: Check status
   debug: var=status.stdout_lines
   when: check_status
-  tags: join_cluster,start_cluster,status
+  tags: join_cluster,start_cluster,status, restart_cluster
   become_user: "{{ cockroach_user }}"
