@@ -1,18 +1,30 @@
 ---
 # tasks file for cockroach
+- name: Create Cockroach group
+  group: name="{{ cockroach_group }}" state=present
+
+- name: Create Cockroach user
+  user: name="{{ cockroach_user }}" shell=/bin/bash group="{{ cockroach_group }}" state=present
+
 - name: Create directories
-  file: path={{ item.mountpoint }} state=directory owner=root group=root mode=775
+  file: path={{ item }} state=directory owner={{ cockroach_user }} group={{ cockroach_group }} mode=774
   with_items:
-       - "{{filesystems}}"
+       - "{{ install_location_base }}"
+       - "{{ certs_dir }}"
+       - "{{ ca_dir }}"
+       - "{{ log_dir }}"
+       - "{{ datastore_basedir }}"
+       - "{{ install_stage }}"
+       - "{{ datastore }}"
   tags: hostfs
 
 - include: filesystems.yml
   when: configure_host_disks
 
 - name: remove installation files
-  file: path="/tmp/{{ binary_version }}" state=absent
-  tags: remove_install_binaries,remove_cluster
+  file: path="{{ install_stage }}/{{ cockroach_binaries.filename }}" state=absent
   when: remove_install_binaries
+  tags: remove_install_binaries,remove_cluster
 
 - name: Kill all roaches
   script: kill-all-roaches.sh
@@ -20,37 +32,37 @@
   tags: remove_cluster
   ignore_errors: true
 
-- name: Remove installation directory
-  file: name={{ install_location }} state=absent
-  when: reinstall_cluster or remove_cluster
-  tags: remove_cluster
+# - name: Remove installation directory
+#   file: name={{ install_location }} state=absent
+#   when: reinstall_cluster or remove_cluster
+#   tags: remove_cluster
 
 - name: remove symlink from /usr/local/bin
-  file: src={{ install_location }}/{{ install_version}}/cockroach dest=/usr/local/bin/cockroach state=absent
+  file: src={{ install_location }}/cockroach dest=/usr/local/bin/cockroach state=absent
   when: reinstall_cluster or remove_cluster
-  tags: remove_cluster
-
+  tags: remove_symlink
 
 - name: Create installation directory
-  file: name={{ install_location }} state=directory
+  file: name={{ install_location }} state=directory owner={{ cockroach_user }} group={{ cockroach_group }}
   tags: directories
 
 - name: Get installation files
-  get_url: url="{{ binary_url }}/{{ binary_version }}" dest="/tmp/{{ binary_version }}" validate_certs=false
-  #shell: "wget {{ binary_url }}/{{ binary_version }} -O /tmp/{{ binary_version }}"
+  get_url: url="{{ binary_url }}/{{ cockroach_binaries.filename }}" dest="{{ install_stage}}/{{ cockroach_binaries.filename }}" validate_certs=false
   tags: download
 
 - name: Unpack/install binaries
-  unarchive: src=/tmp/{{ binary_version }} dest={{ install_location }} copy=no
+  unarchive: src="{{ install_stage}}/{{ cockroach_binaries.filename }}" dest={{ install_location_base }} copy=no owner={{ cockroach_user }} group={{ cockroach_group }}
   tags: install
 
 - name: create symlink to /usr/local/bin
-  file: src={{ install_location }}/{{ install_version}}/cockroach dest=/usr/local/bin/cockroach state=link
+  file: src={{ install_location }}/cockroach dest=/usr/local/bin/cockroach state=link
   tags: link
 
 - name: test the installation
-  shell: "{{ install_location }}/{{ install_version}}/cockroach version"
+  shell: "{{ install_location }}/cockroach version"
   register: cversion
+  failed_when:
+        - not cversion.stdout |search ('v{{install_version}}')
   tags: test
 
 - name: print output

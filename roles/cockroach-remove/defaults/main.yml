@@ -1,0 +1,24 @@
+---
+# defaults file for cockroach
+
+binary_url: https://binaries.cockroachdb.com
+#binary_url: http://dba-pipeline.swe1.unibet.com
+install_version: 1.0.1
+cockroach_port: 26257
+remove_cluster: true
+remove_install_binaries: true
+remove_directories: false
+remove_datastore: false
+remove_user: false
+configure_host_disks: false
+datastore_basedir: /var/lib/cockroachdata
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ cockroach_binaries.unpacked_version }}"
+
+cockroach_binaries:
+          unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
+          filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
+store: "{{datastore_basedir}}/ds1"
+log_dir: "{{ install_location_base }}"
+cockroach_user: cockroach_
+cockroach_group: cockroach

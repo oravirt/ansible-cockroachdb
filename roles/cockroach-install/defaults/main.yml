@@ -2,11 +2,30 @@
 # defaults file for cockroach
 
 binary_url: https://binaries.cockroachdb.com
-binary_version: cockroach-latest.linux-amd64.tgz
-install_location: /var/lib/cockroach
-install_version: cockroach-latest.linux-amd64
+#binary_url: http://dba-pipeline.swe1.unibet.com
+install_version: 1.0.1
 cockroach_port: 26257
 http_port: 8080
 reinstall_cluster: False
 remove_cluster: False
 remove_install_binaries: False
+configure_host_disks: false
+cockroach_user: cockroach
+cockroach_group: cockroach
+
+filesystems:
+      - { device: /dev/sdb, vgname: vgcr, lvname: lvcr, mountpoint: "{{install_location_base}}", fstype: xfs }
+      - { device: /dev/sdc, vgname: vgcrdata, lvname: lvcrdata, mountpoint: "{{datastore_basedir}}", fstype: xfs }
+
+datastore_basedir: /var/lib/cockroachdata
+datastore: "{{ datastore_basedir}}/ds1"
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ cockroach_binaries.unpacked_version }}"
+install_stage: /tmp/cockroach
+certs_dir: "{{ install_location_base }}/certs"
+ca_dir: "{{ install_location_base }}/ca"
+log_dir: "{{ install_location_base }}/log"
+
+cockroach_binaries:
+          unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
+          filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"

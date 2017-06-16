@@ -1,9 +1,12 @@
 ---
 # defaults file for cockroach-cluster
- #cluster_master: "{{play_hosts[0]}}"
- hostgroup: "{{ group_names[0] }}"
- stop_cluster: False
- check_status: False
- reinstall_cluster: False
- cockroach_port: 26257
- adminui_port: 8080
+cluster_master: "{{play_hosts[0]}}"
+use_random_master: false
+hostgroup: "{{ group_names[0] }}"
+stop_cluster: False
+check_status: False
+reinstall_cluster: False
+cockroach_port: 26257
+adminui_port: 8080
+datastore: "{{ datastore_basedir}}/ds1"
+log_dir: "{{ install_location_base }}/log"

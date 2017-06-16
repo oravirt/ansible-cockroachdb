@@ -1,0 +1,7 @@
+---
+
+  - name: Remove CockroachDB
+    hosts: "{{hostgroup }}"
+    become: true
+    roles:
+      - role: cockroach-remove

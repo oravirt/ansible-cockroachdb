@@ -33,11 +33,12 @@ import os
 # Check if the service exists
 def check_database_exists(module, msg, path, host, port, name):
 
-    command = "%s/cockroach sql --host=%s --port=%s --execute \"show databases\"" % (path, host, port)
+    command = "%s/cockroach sql --host=%s --port=%s --insecure --execute \"show databases\"" % (path, host, port)
     (rc, stdout, stderr) = module.run_command(command)
     #module.exit_json(msg=rc)
     if rc != 0:
         msg[0] = "Something went wrong, stderr: %s" % (stderr)
+
 
     if name.lower() in stdout.lower():
         return True

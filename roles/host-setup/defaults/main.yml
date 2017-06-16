@@ -4,3 +4,4 @@ sync_clocks: False
 configure_host_disks: False
 filesystems:
       - { device: /dev/xvdb, vgname: vgcr, lvname: lvcr, mountpoint: /var/lib/cockroach, fstype: ext4 }
+generate_etchosts: false

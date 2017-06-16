@@ -44,7 +44,7 @@ def check_node_started(module, msg, path):
     else:
         return False
 
-def start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master):
+def start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master, certs_dir):
 
     command = "nohup %s/cockroach start --http-port=%s --port=%s --host=%s " % (path, http_port, port, host)
     if store:
@@ -57,7 +57,11 @@ def start_node(module, msg, path, store, host, port, http_port, join, cache, log
         command += ' --locality=%s' % (locality)
     if log_dir:
         command += ' --log-dir %s' % (log_dir)
-    command += ' --insecure --background'
+    if certs_dir:
+        command += ' --certs-dir %s' % (certs_dir)
+    elif not certs_dir:
+        command += ' --insecure '
+    command += ' --background'
 
     #module.exit_json(msg=command)
     (rc, stdout, stderr) = module.run_command(command)
@@ -68,9 +72,14 @@ def start_node(module, msg, path, store, host, port, http_port, join, cache, log
         msg[0] = 'Successfully started node - %s ' % (stdout)
         return True
 
-def stop_node(module, msg, path, host, port):
+def stop_node(module, msg, path, host, port, secure, certs_dir):
 
-    command = "%s/cockroach quit --host=%s --port=%s" % (path, host, port)
+    command = "%s/cockroach quit --host=%s --port=%s " % (path, host, port)
+    if certs_dir:
+        command += ' --certs-dir %s' % (certs_dir)
+    elif not certs_dir:
+        command += ' --insecure '
+
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:
         msg[0] = "Failed to stop node. %s" % (stderr)
@@ -79,9 +88,14 @@ def stop_node(module, msg, path, host, port):
         msg[0] = 'Successfully stopped node - %s' % (stdout.strip())
         return True
 
-def status_node(module, msg, path):
+def status_node(module, msg, path, secure, certs_dir):
 
     command = "%s/cockroach node status" % (path)
+    if certs_dir:
+        command += ' --certs_dir %s' % (certs_dir)
+    elif not certs_dir:
+        command += ' --insecure '
+
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:
         msg[0] = "Failed to check status for node: %s" % (stderr)
@@ -107,6 +121,7 @@ def main():
             host            = dict(default='localhost'),
             join            = dict(required=False, type='bool'),
             cluster_master  = dict(required=False),
+            certs_dir       = dict(required=False),
 
 
         ),
@@ -124,6 +139,7 @@ def main():
     host            = module.params["host"]
     join            = module.params["join"]
     cluster_master  = module.params["cluster_master"]
+    certs_dir       = module.params["certs_dir"]
 
 
     if not path:
@@ -140,7 +156,7 @@ def main():
 
     if state == 'started':
         if not check_node_started(module, msg, path):
-            if start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master):
+            if start_node(module, msg, path, store, host, port, http_port, join, cache, log_dir, locality, cluster_master, certs_dir):
                 module.exit_json(msg=msg[0], changed=True)
             else:
                 module.fail_json(msg=msg[0], changed=False)

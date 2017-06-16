@@ -2,6 +2,7 @@
 # tasks file for host-setup
 - name: Generate /etc/hosts
   template: src=etc-hosts.j2 dest=/etc/hosts backup=false
+  when: generate_etchosts
   tags: etc_hosts
 
 - name: Make sure ntp is running
@@ -12,3 +13,14 @@
   shell: "ntpdate -u 0.rhel.pool.ntp.org"
   when: sync_clocks
   tags: ntp
+
+- name: Check time
+  shell: date
+  #when: sync_clocks
+  register: time
+  tags: ntp,time
+
+- name: check time
+  debug: var=time.stdout
+  #when: sync_clocks
+  tags: ntp,time
