@@ -1,0 +1,17 @@
+---
+
+  - name: Generic host setup
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - host-setup
+
+
+  - name: Install CockroachDB
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - cockroach-install
+      - cockroach-cluster
+      - cockroach-db
+
