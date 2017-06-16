@@ -20,5 +20,5 @@ cockroach_binaries:
           filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
 store: "{{datastore_basedir}}/ds1"
 log_dir: "{{ install_location_base }}"
-cockroach_user: cockroach_
+cockroach_user: cockroach
 cockroach_group: cockroach
