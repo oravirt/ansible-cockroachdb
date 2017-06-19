@@ -1,0 +1,62 @@
+---
+# tasks file for cockroach-upgrade
+- name: Check status before upgrade
+  shell: "systemctl status cockroachdb"
+  when: use_systemd
+  register: status
+  tags: start_cluster_for_systemd,systemd_config, status
+
+- debug: var=status.stdout_lines
+  when: use_systemd
+  tags: start_cluster_for_systemd,systemd_config, status
+
+- name: Stop cluster node
+  cockroach_cluster: path={{ install_location }} host={{ inventory_hostname }} state=stopped
+  when: not use_systemd
+  tags: stop_cluster
+  become_user: "{{ cockroach_user }}"
+
+- name: Stop cluster node (systemd)
+  systemd: name=cockroachdb state=stopped
+  when: use_systemd
+  tags: stop_cluster
+
+- name: Configure cockroach systemd service
+  template: src=cockroachdb.service.j2 dest=/etc/systemd/system/cockroachdb.service owner=root
+  become: true
+  when: use_systemd
+  register: systemd_config
+  tags: systemd_config
+
+- name: Register cockroachdb systemd service
+  systemd: name=cockroachdb daemon_reload=yes enabled=yes
+  when: use_systemd #and systemd_config.change
+  tags: systemd_config
+
+- name: Start cluster node (systemd)
+  systemd: name=cockroachdb state=started
+  when: use_systemd
+  tags: stop_cluster
+
+- name: Start cluster node
+  cockroach_cluster:
+           path={{ install_location }}
+           host={{ inventory_hostname }}
+           store={{ datastore |default (omit)}}
+           cache={{ caches |default (omit)}}
+           log_dir={{ log_dir | default(omit) }}
+           locality={{ locality | default(omit) }}
+           state=started
+  when: not use_systemd
+  tags: upgrade
+  become_user: "{{ cockroach_user }}"
+
+- name: Check status after upgrade
+  shell: "systemctl status cockroachdb; sleep 3; systemctl status cockroachdb"
+  when: use_systemd
+  register: status
+  tags: start_cluster_for_systemd,systemd_config, status
+
+- debug: var=status.stdout_lines
+  when: use_systemd
+  tags: start_cluster_for_systemd,systemd_config, status

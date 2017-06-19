@@ -1,0 +1,14 @@
+---
+
+  - name: Install CockroachDB
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - cockroach-install
+
+  - name: Perform rolling upgrade
+    hosts: "{{ hostgroup }}"
+    become: true
+    serial: 1
+    roles:
+      - cockroach-upgrade

@@ -15,3 +15,9 @@
       - cockroach-cluster
       - cockroach-db
 
+  - name: Handover to systemd
+    hosts: "{{ hostgroup }}"
+    become: true
+    serial: 1
+    roles:
+      - { role: cockroach-systemd, when: use_systemd}

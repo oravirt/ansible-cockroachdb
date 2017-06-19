@@ -39,7 +39,7 @@
 
 - name: remove symlink from /usr/local/bin
   file: src={{ install_location }}/cockroach dest=/usr/local/bin/cockroach state=absent
-  when: reinstall_cluster or remove_cluster
+  when: reinstall_cluster or remove_cluster or remove_symlink
   tags: remove_symlink
 
 - name: Create installation directory
@@ -51,8 +51,8 @@
   tags: download
 
 - name: Unpack/install binaries
-  unarchive: src="{{ install_stage}}/{{ cockroach_binaries.filename }}" dest={{ install_location_base }} copy=no owner={{ cockroach_user }} group={{ cockroach_group }}
-  tags: install
+  unarchive: src="{{ install_stage}}/{{ cockroach_binaries.filename }}" dest={{ install_location }} extra_opts="--strip-components=1" copy=no owner={{ cockroach_user }} group={{ cockroach_group }}
+  tags: install,unpack
 
 - name: create symlink to /usr/local/bin
   file: src={{ install_location }}/cockroach dest=/usr/local/bin/cockroach state=link

@@ -1,0 +1,32 @@
+- name: Configure cockroach systemd service
+  template: src=cockroachdb.service.j2 dest=/etc/systemd/system/cockroachdb.service owner=root
+  become: true
+  when: use_systemd
+  register: systemd_config
+  tags: systemd_config
+
+- name: Register cockroachdb systemd service
+  systemd: name=cockroachdb daemon_reload=yes enabled=yes
+  when: use_systemd and systemd_config.changed
+  tags: systemd_config
+
+- name: Stop cluster
+  cockroach_cluster: path={{ install_location }} host={{ inventory_hostname }} state=stopped
+  when: use_systemd and systemd_config.changed
+  tags: stop_cluster_for_systemd,systemd_config
+  become_user: "{{ cockroach_user }}"
+
+- name: Start cockroach node with systemd
+  systemd: name=cockroachdb state=started
+  when: use_systemd and systemd_config.changed
+  tags: start_cluster_for_systemd,systemd_config
+
+- name: Check status
+  shell: "systemctl status cockroachdb; sleep 3; systemctl status cockroachdb"
+  when: use_systemd
+  register: status
+  tags: start_cluster_for_systemd,systemd_config, systemd_status
+
+- debug: var=status.stdout_lines
+  when: use_systemd
+  tags: start_cluster_for_systemd,systemd_config, systemd_status

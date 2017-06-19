@@ -1,0 +1,23 @@
+cluster_master: "{{play_hosts[0]}}"
+use_random_master: false
+hostgroup: "{{ group_names[0] }}"
+stop_cluster: False
+check_status: False
+reinstall_cluster: False
+cockroach_port: 26257
+http_port: 8080
+#adminui_port: 8080
+log_dir: "{{ install_location_base }}/log"
+cockroach_user: cockroach
+use_systemd: true
+install_version: 1.0.2
+datastore_basedir: /var/lib/cockroachdata
+datastore: "{{ datastore_basedir}}/ds1"
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ cockroach_binaries.unpacked_version }}"
+install_stage: /tmp/cockroach
+certs_dir: "{{ install_location_base }}/certs"
+ca_dir: "{{ install_location_base }}/ca"
+cockroach_binaries:
+          unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
+          filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"

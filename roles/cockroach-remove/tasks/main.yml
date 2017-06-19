@@ -6,9 +6,16 @@
 
 - name: Kill all roaches
   script: kill-all-roaches.sh
-  when: remove_cluster
   tags: remove_cluster
   ignore_errors: true
+
+# - name: Stop the systemd service
+#   systemd: name=cockroachdb state=stopped
+#   when: remove_cluster and use_systemd
+
+- name: Remove the systemd config
+  file: path=/etc/systemd/system/cockroachdb.service state=absent
+  when: use_systemd
 
 - name: remove symlink from /usr/local/bin
   file: src={{ install_location }}/cockroach dest=/usr/local/bin/cockroach state=absent

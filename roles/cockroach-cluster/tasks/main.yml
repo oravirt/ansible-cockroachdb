@@ -57,6 +57,7 @@
            cluster_master={{ cluster_master }}
            cache={{ caches |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
+           locality={{ locality | default(omit) }}
            state=started
   when: inventory_hostname != cluster_master
   tags: join_cluster,start_cluster,restart_cluster, notmaster
