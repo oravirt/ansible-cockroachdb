@@ -2,7 +2,6 @@
 # defaults file for cockroach
 
 binary_url: https://binaries.cockroachdb.com
-#binary_url: http://dba-pipeline.swe1.unibet.com
 install_version: 1.0.2
 cockroach_port: 26257
 http_port: 8080
