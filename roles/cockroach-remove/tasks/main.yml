@@ -4,6 +4,11 @@
   when: remove_install_binaries
   tags: remove_install_binaries,remove_cluster
 
+# - name: disable systemd
+#   shell: systemctl disable cockroachdb
+#   when: use_systemd
+#   ignore_errors: true
+
 - name: Kill all roaches
   script: kill-all-roaches.sh
   tags: remove_cluster

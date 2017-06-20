@@ -21,7 +21,7 @@ filesystems:
 datastore_basedir: /var/lib/cockroachdata
 datastore: "{{ datastore_basedir}}/ds1"
 install_location_base: /var/lib/cockroach
-install_location: "{{ install_location_base}}/{{ cockroach_binaries.unpacked_version }}"
+install_location: "{{ install_location_base}}/{{ install_version }}"
 install_stage: /tmp/cockroach
 certs_dir: "{{ install_location_base }}/certs"
 ca_dir: "{{ install_location_base }}/ca"

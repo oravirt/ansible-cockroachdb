@@ -1,0 +1,40 @@
+---
+# tasks file for cockroach-certs
+
+# - name: Create temporary local directory for key generation
+#   file: path=/tmp/aaa state=directory
+#   become: false
+#   run_once: true
+#   tags: tempdir,certs, nodecert
+#   delegate_to: 127.0.0.1
+
+- name: Push CA key/cert
+  copy: src={{ item.name }} dest={{ item.dest }} owner={{ cockroach_user }} group={{ cockroach_group }} mode={{ item.mode }}
+  with_items:
+      - "{{ ca_files }}"
+  tags: ca_cert
+
+- name: Create node keys
+  shell: "{{ install_location }}/cockroach cert create-node {{ ansible_hostname }} {{ ansible_fqdn }} localhost --certs-dir={{ certs_dir }}/ --ca-key={{ca_dir}}/ca.key --overwrite"
+  become_user: "{{ cockroach_user}}"
+  args:
+     creates: "{{ certs_dir}}/node.crt"
+  tags: node_cert
+
+- name: Create user cert
+  shell: "{{ install_location }}/cockroach cert create-client  --certs-dir={{ certs_dir }}/ --ca-key={{ca_dir}}/ca.key {{ item }}"
+  with_items:
+      - "{{ cert_users }}"
+  become_user: "{{ cockroach_user}}"
+  args:
+     creates: "{{ certs_dir}}/client.{{ item }}.crt"
+  tags: node_cert
+
+- name: List certs
+  shell: "{{ install_location }}/cockroach cert list --certs-dir={{ certs_dir }}"
+  become_user: "{{ cockroach_user}}"
+  tags: node_cert, check_node_cert
+  register: node_cert
+
+- debug: var=node_cert.stdout_lines
+  tags: node_cert,check_node_cert

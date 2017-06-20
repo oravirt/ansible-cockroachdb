@@ -21,3 +21,4 @@ ca_dir: "{{ install_location_base }}/ca"
 cockroach_binaries:
           unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
           filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
+secure_cluster: true

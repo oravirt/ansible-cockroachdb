@@ -35,7 +35,21 @@
   tags: stop_cluster,restart_cluster
   become_user: "{{ cockroach_user }}"
 
-- name: Start master node
+- name: Start master node (secure)
+  cockroach_cluster:
+           path={{ install_location }}
+           host={{ ansible_hostname }}
+           store={{ datastore |default (omit)}}
+           cache={{ cache |default (omit)}}
+           log_dir={{ log_dir | default(omit) }}
+           certs_dir={{ certs_dir | default(omit) }}
+           locality={{ locality | default(omit) }}
+           state=started
+  when: inventory_hostname == cluster_master and secure_cluster
+  tags: start_cluster,restart_cluster,master
+  become_user: "{{ cockroach_user }}"
+
+- name: Start master node (insecure)
   cockroach_cluster:
            path={{ install_location }}
            host={{ ansible_hostname }}
@@ -44,11 +58,28 @@
            log_dir={{ log_dir | default(omit) }}
            locality={{ locality | default(omit) }}
            state=started
-  when: inventory_hostname == cluster_master
+  when: inventory_hostname == cluster_master and not secure_cluster
   tags: start_cluster,restart_cluster,master
   become_user: "{{ cockroach_user }}"
 
-- name: Start other nodes
+
+- name: Start other nodes (secure)
+  cockroach_cluster:
+           path={{ install_location }}
+           host={{ ansible_hostname }}
+           store={{ datastore |default (omit)}}
+           join=True
+           cluster_master={{ cluster_master }}
+           cache={{ caches |default (omit)}}
+           log_dir={{ log_dir | default(omit) }}
+           certs_dir={{ certs_dir | default(omit) }}
+           locality={{ locality | default(omit) }}
+           state=started
+  when: inventory_hostname != cluster_master and secure_cluster
+  tags: join_cluster,start_cluster,restart_cluster, notmaster
+  become_user: "{{ cockroach_user }}"
+
+- name: Start other nodes (insecure)
   cockroach_cluster:
            path={{ install_location }}
            host={{ ansible_hostname }}
@@ -59,9 +90,10 @@
            log_dir={{ log_dir | default(omit) }}
            locality={{ locality | default(omit) }}
            state=started
-  when: inventory_hostname != cluster_master
+  when: inventory_hostname != cluster_master and not secure_cluster
   tags: join_cluster,start_cluster,restart_cluster, notmaster
   become_user: "{{ cockroach_user }}"
+
 
 - name: Check status
   shell: "/usr/local/bin/cockroach node status --host {{ inventory_hostname }} --insecure"

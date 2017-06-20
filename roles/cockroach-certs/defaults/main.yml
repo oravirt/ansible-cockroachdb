@@ -1,0 +1,17 @@
+---
+# defaults file for cockroach-certs
+cluster_master: "{{play_hosts[0]}}"
+secure_cluster: True
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ install_version }}"
+install_version: 1.0.2
+install_stage: /tmp/cockroach
+certs_dir: "{{ install_location_base }}/certs"
+ca_dir: "{{ install_location_base }}/ca"
+ca_files:
+     - {name: ca.key, dest: "{{ ca_dir }}/", mode: 600 }
+     - {name: ca.crt, dest: "{{ certs_dir }}/", mode: 644 }
+
+cert_users:
+     - root
+     - "{{ cockroach_user }}"
