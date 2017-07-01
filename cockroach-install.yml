@@ -12,7 +12,7 @@
     become: true
     roles:
       - cockroach-install
-      - {role: cockroach-certs, when: secure_cluster} 
+      - {role: cockroach-certs, when: cluster_mode|lower == 'secure'}
       - cockroach-cluster
       - cockroach-db
 

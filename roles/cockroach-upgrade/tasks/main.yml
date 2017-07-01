@@ -1,14 +1,17 @@
 ---
 # tasks file for cockroach-upgrade
+
+- debug: msg="---------------- UPGRADING COCKROACHDB TO VERSION - {{ install_version }} ---------------- "
+
 - name: Check status before upgrade
-  shell: "systemctl status cockroachdb"
+  shell: "systemctl status {{ systemd_config_service }}"
   when: use_systemd
   register: status
-  tags: start_cluster_for_systemd,systemd_config, status
+  tags: start_cluster_for_systemd,systemd_config,status
 
 - debug: var=status.stdout_lines
   when: use_systemd
-  tags: start_cluster_for_systemd,systemd_config, status
+  tags: start_cluster_for_systemd,systemd_config,status
 
 - name: Stop cluster node
   cockroach_cluster: path={{ install_location }} host={{ inventory_hostname }} state=stopped
@@ -17,24 +20,27 @@
   become_user: "{{ cockroach_user }}"
 
 - name: Stop cluster node (systemd)
-  systemd: name=cockroachdb state=stopped
+  systemd: name={{ systemd_config_service }} state=stopped
   when: use_systemd
   tags: stop_cluster
 
 - name: Configure cockroach systemd service
-  template: src=cockroachdb.service.j2 dest=/etc/systemd/system/cockroachdb.service owner=root
+  template: src=cockroachdb.service.j2 dest={{ systemd_config_path }} owner=root mode=0755
   become: true
   when: use_systemd
   register: systemd_config
   tags: systemd_config
 
 - name: Register cockroachdb systemd service
-  systemd: name=cockroachdb daemon_reload=yes enabled=yes
+  systemd: name={{ systemd_config_service }} daemon_reload=yes enabled=yes
   when: use_systemd #and systemd_config.change
   tags: systemd_config
 
+- pause:
+     seconds: 5
+
 - name: Start cluster node (systemd)
-  systemd: name=cockroachdb state=started
+  systemd: name={{ systemd_config_service }} state=started
   when: use_systemd
   tags: stop_cluster
 
@@ -51,12 +57,15 @@
   tags: upgrade
   become_user: "{{ cockroach_user }}"
 
+- pause:
+     seconds: 5
+
 - name: Check status after upgrade
-  shell: "systemctl status cockroachdb; sleep 3; systemctl status cockroachdb"
+  shell: "systemctl status {{ systemd_config_service }}; sleep 3; systemctl status {{ systemd_config_service }}"
   when: use_systemd
   register: status
-  tags: start_cluster_for_systemd,systemd_config, status
+  tags: start_cluster_for_systemd,systemd_config,status
 
 - debug: var=status.stdout_lines
   when: use_systemd
-  tags: start_cluster_for_systemd,systemd_config, status
+  tags: start_cluster_for_systemd,systemd_config,status

@@ -30,3 +30,6 @@ log_dir: "{{ install_location_base }}/log"
 cockroach_binaries:
           unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
           filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
+cluster_mode: insecure
+systemd_config_service: cockroachdb
+systemd_config_path: "/etc/systemd/system/cockroachdb.service"

@@ -8,10 +8,11 @@ Requires=network.target
 [Service]
 Type=simple
 Restart=on-failure
-{% if not secure_cluster %}
+RestartSec=10
+{% if cluster_mode|lower == 'insecure' %}
 ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_hostname}} --store={{datastore}} --log-dir={{log_dir}} --insecure
 ExecStop={{install_location}}/cockroach quit --host={{ansible_hostname}}
-{% elif  secure_cluster %}
+{% elif  cluster_mode|lower == 'secure' %}
 ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_hostname}} --store={{datastore}} --log-dir={{log_dir}} --certs-dir={{certs_dir}}
 ExecStop={{install_location}}/cockroach quit --host={{ansible_hostname}} --certs-dir={{certs_dir}}
 {% endif %}

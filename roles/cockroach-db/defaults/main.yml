@@ -3,4 +3,4 @@
 databases:
       - testdb1
       - bank
-secure_cluster: True
+cluster_mode: insecure

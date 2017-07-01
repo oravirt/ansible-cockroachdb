@@ -1,7 +1,7 @@
 ---
 # defaults file for cockroach-certs
 cluster_master: "{{play_hosts[0]}}"
-secure_cluster: True
+cluster_mode: insecure
 install_location_base: /var/lib/cockroach
 install_location: "{{ install_location_base}}/{{ install_version }}"
 install_version: 1.0.2

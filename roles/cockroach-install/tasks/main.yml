@@ -21,16 +21,16 @@
 - include: filesystems.yml
   when: configure_host_disks
 
-- name: remove installation files
-  file: path="{{ install_stage }}/{{ cockroach_binaries.filename }}" state=absent
-  when: remove_install_binaries
-  tags: remove_install_binaries,remove_cluster
-
-- name: Kill all roaches
-  script: kill-all-roaches.sh
-  when: reinstall_cluster or remove_cluster
-  tags: remove_cluster
-  ignore_errors: true
+# - name: remove installation files
+#   file: path="{{ install_stage }}/{{ cockroach_binaries.filename }}" state=absent
+#   when: remove_install_binaries
+#   tags: remove_install_binaries,remove_cluster
+#
+# - name: Kill all roaches
+#   script: kill-all-roaches.sh
+#   when: reinstall_cluster or remove_cluster
+#   tags: remove_cluster
+#   ignore_errors: true
 
 # - name: Remove installation directory
 #   file: name={{ install_location }} state=absent
@@ -48,6 +48,7 @@
 
 - name: Get installation files
   get_url: url="{{ binary_url }}/{{ cockroach_binaries.filename }}" dest="{{ install_stage}}/{{ cockroach_binaries.filename }}" validate_certs=false
+  when: download_binaries
   tags: download
 
 - name: Unpack/install binaries

@@ -14,9 +14,10 @@
   tags: remove_cluster
   ignore_errors: true
 
-# - name: Stop the systemd service
-#   systemd: name=cockroachdb state=stopped
-#   when: remove_cluster and use_systemd
+- name: Update systemd
+  systemd: name=cockroachdb daemon_reload=yes enabled=no
+  when: use_systemd
+  ignore_errors: true
 
 - name: Remove the systemd config
   file: path=/etc/systemd/system/cockroachdb.service state=absent

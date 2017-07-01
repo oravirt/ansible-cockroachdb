@@ -1,0 +1,11 @@
+- name: Create databases (insecure)
+  cockroach_db:
+        name={{ item }}
+        path={{ install_location }}
+        host={{ inventory_hostname }}
+        state=present
+  with_items:
+        - "{{ databases }}"
+  when: inventory_hostname == cluster_master and databases is defined
+  tags: create_db
+  become_user: "{{ cockroach_user }}"
