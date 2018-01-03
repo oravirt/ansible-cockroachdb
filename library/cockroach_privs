@@ -30,7 +30,7 @@ author: Oscar C, based on the work of Mikael Sandström, oravirt@gmail.com, @ora
 '''
 
 EXAMPLES = '''
-# Create a certificate for a user
+# Grant ALL privileges to user1 on db1
 cockroach_privs: name=user1 db=db1 privs=ALL path=/var/lib/cockroach
 '''
 import os
