@@ -1,5 +1,9 @@
 <b> ansible-cockroachdb </b>
 
+
+**OUTDATED - NEW README COMING SOON**
+
+
 <b> Requirements:
 
 - Ansible (developed on 2.1.0.0)
