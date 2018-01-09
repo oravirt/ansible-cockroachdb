@@ -1,0 +1,4 @@
+grafana_node: False
+prometheus_node: False
+loadbalancer_node: True
+cockroach_group: crdb-dc1

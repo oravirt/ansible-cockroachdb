@@ -1,0 +1,14 @@
+# my global config
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+rule_files:
+{% if rules_prometheus is defined %}
+{% for item in rules_prometheus %}
+  - {{ rules_dir |basename }}/{{ item.rulename}}
+{% endfor %}
+{% endif %}
+
+scrape_configs:
+{{ prometheus_scrape_configs | to_json | from_json | to_nice_yaml( width=50, explicit_start=False, explicit_end=False) }}

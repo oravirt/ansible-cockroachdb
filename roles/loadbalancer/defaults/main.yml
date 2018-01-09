@@ -1,12 +1,33 @@
 ---
+#jinja2: lstrip_blocks: “True”
 # defaults file for loadbalancer
-
+loadbalancer_node: True
 lb_type: haproxy   # haproxy|nginx
-configure_lb: False
+configure_lb: True
 epel_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 cockroach_port: 26257
+cockroach_haproxy_balance: roundrobin     # roundrobin|leastconn|source
 adminui_port: 8080
+haproxy_maxconn: 4096
+haproxy_stats_port: 50000
+haproxy_stats_uri: '/haproxy_stats'
 haproxy_admin_socket: /var/lib/haproxy/admin.sock
+haproxy_defaults:
+       - {key: "mode                 tcp"}
+       - {key: "log                  global"}
+       - {key: "option               httplog"}
+       - {key: "option               dontlognull"}
+       - {key: "timeout connect      10s"}
+       - {key: "timeout client       180m"}
+       - {key: "timeout server       180m"}
+       - {key: "option               clitcpka"}
+       - {key: "listen haproxy_stats :{{ haproxy_stats_port }}"}
+       - {key: "mode                 http"}
+       - {key: "stats                enable"}
+       - {key: "stats uri            {{ haproxy_stats_uri}}"}
+
+
+
 rsyslog_conf:
     - {path: /etc/rsyslog.conf, regexp: "'^#$UDPServerRun 514", line: "$UDPServerRun 514", insertafter: "# Provides UDP syslog reception"}
     - {path: /etc/rsyslog.conf, regexp: "'^#$ModLoad imudp", line: "$ModLoad imudp", insertafter: "# Provides UDP syslog reception" }
@@ -14,3 +35,5 @@ rsyslog_conf:
 haproxy_rsyslog_conf:
        - {type: "local2.=info", logfile: /var/log/haproxy-access.log, enabled: False  }
        - {type: "local2.notice", logfile: /var/log/haproxy-status.log, enabled: True  }
+
+cockroach_group: crdb-dc1

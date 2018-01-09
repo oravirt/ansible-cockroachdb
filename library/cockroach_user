@@ -32,12 +32,12 @@ import os
 
 # Check if the service exists
 def check_user_exists(module, msg, path, host, port, name, certs_dir):
-    command = "%s/cockroach --host=%s --port=%s " % (path, host, port)
+    command = "%s/cockroach user ls --host=%s --port=%s " % (path, host, port)
     if not certs_dir:
         command += ' --insecure'
     elif certs_dir:
         command += ' --certs-dir=%s' % (certs_dir)
-    command += ' user ls'
+
 
 
     #module.fail_json(msg=command)
@@ -53,29 +53,28 @@ def check_user_exists(module, msg, path, host, port, name, certs_dir):
         return False
 
 def create_user(module, msg, path, host, port, name, certs_dir):
-    command = "%s/cockroach --host=%s --port=%s " % (path, host, port)
+    command = "%s/cockroach user set %s  --host=%s --port=%s " % (path, name, host, port)
     if not certs_dir:
         command += ' --insecure'
     elif certs_dir:
         command += ' --certs-dir=%s' % (certs_dir)
-    command += ' user set %s' % (name)
 
     #module.fail_json(msg=command)
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:
-        msg[0] = "Creating user %s failed. %s" % (name, stderr)
+        msg[0] = "Creating user %s failed. %s. Command: %s" % (name, stderr, command)
         return False
     else:
         return True
 
 def remove_user(module, msg, path, host, port, name, certs_dir):
 
-    command = "%s/cockroach --host=%s --port=%s " % (path, host, port)
+    command = "%s/cockroach user rm %s --host=%s --port=%s " % (path, name, host, port)
     if not certs_dir:
         command += ' --insecure'
     elif certs_dir:
         command += ' --certs-dir=%s' % (certs_dir)
-    command += ' user rm %s' % (name)
+    # command += ' user rm %s' % (name)
 
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:

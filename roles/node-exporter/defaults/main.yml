@@ -1,0 +1,8 @@
+install_version_ne: 0.14.0
+download_baseurl_ne: https://github.com/prometheus/node_exporter/releases/download/
+binary_url_ne: "{{ download_baseurl_ne }}/v{{ install_version_ne }}/{{ item.filename}}"
+binaries_ne:
+     - {filename: node_exporter-0.14.0.linux-amd64.tar.gz, version: 0.14.0 }
+base_install_dir_ne: /opt/node-exporter
+version_install_dir_ne: "{{base_install_dir_ne}}/{{ install_version_ne }}"
+stage_ne: /tmp/node-exporter

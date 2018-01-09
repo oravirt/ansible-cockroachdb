@@ -1,0 +1,70 @@
+- name: prometheus | create directories
+  file:
+     name: "{{ item }}"
+     state: directory
+     owner: prometheus
+     group: prometheus
+  with_items:
+      - "{{ stage_prometheus }}"
+      - "{{ base_install_dir_prometheus }}"
+      - "{{ version_install_dir_prometheus }}"
+      - "{{ rules_dir }}"
+
+
+- name: prometheus | download
+  get_url:
+      url: "{{ binary_url_prometheus }}"
+      dest: "{{ stage_prometheus }}/{{ item.filename}}"
+  with_items:
+      - "{{ binaries_prometheus }}"
+  when: install_version_prometheus == item.version
+
+- name: prometheus | unpack
+  unarchive:
+       src: "{{ stage_prometheus }}/{{ item.filename}}"
+       dest: "{{version_install_dir_prometheus}}"
+       extra_opts: "--strip-components=1"
+       copy: no
+       owner: prometheus
+       group: prometheus
+  with_items:
+       - "{{ binaries_prometheus }}"
+  args:
+      creates: "{{version_install_dir_prometheus}}/prometheus"
+  tags: unpack-prom
+
+- name: prometheus | add systemd config
+  template:
+       src: prometheus.service.j2
+       dest: /etc/systemd/system/prometheus.service
+       mode: 0644
+       owner: root
+       group: root
+  tags: systemd
+
+- name: prometheus | add prometheus config
+  template:
+       src: prometheus.yml.j2
+       dest: "{{ version_install_dir_prometheus }}/prometheus.yml"
+       mode: 0644
+       owner: prometheus
+       group: prometheus
+       backup: true
+  tags: prometheus_config
+  register: prometheus_config
+  notify: restart prometheus
+
+- name: prometheus | download Cockroachdb rules for Prometheus
+  get_url:
+      url: "{{ item.url }}/{{ item.rulename }}"
+      dest: "{{ rules_dir }}/{{ item.rulename}}"
+  with_items:
+      - "{{ rules_prometheus }}"
+  tags: prometheus_rules
+
+- name: prometheus | start prometheus
+  systemd:
+      name: prometheus
+      state: started
+      enabled: true
+  tags: systemd

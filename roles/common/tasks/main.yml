@@ -1,0 +1,5 @@
+- name: Add prometheus user
+  user: name={{ item.user }} password={{ item.password }} generate_ssh_key=true state={{ item.state }}
+  with_items:
+      - "{{ prometheus_users }}"
+  tags: users

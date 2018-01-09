@@ -29,7 +29,7 @@
   become: true
   when: use_systemd
   register: systemd_config
-  tags: systemd_config
+  tags: systemd_config,create_systemd_config
 
 - name: Register cockroachdb systemd service
   systemd: name={{ systemd_config_service }} daemon_reload=yes enabled=yes
@@ -69,3 +69,6 @@
 - debug: var=status.stdout_lines
   when: use_systemd
   tags: start_cluster_for_systemd,systemd_config,status
+
+- pause:
+  when: pause_between_nodes

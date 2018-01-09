@@ -1,9 +1,17 @@
 ---
 # tasks file for nginx-lb
 
+- name: Assert
+  assert:
+    that:
+      - cockroach_group is defined
+    msg: "Playbook must be called with '-e cockroach_group=<inventory_group_with_crdb_nodes_that_should_be_loadbalanced>'"
+
 - name: Start and enable NTP
   service: name=ntpd  state=started  enabled=yes
   tags: lb
   when: configure_lb
+
+#- debug: var=cockroach_group
 
 - include: "{{ lb_type }}.yml"

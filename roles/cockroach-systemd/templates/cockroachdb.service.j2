@@ -1,21 +1,22 @@
+#jinja2: trim_blocks:False
+# {{ ansible_managed }}
+
 # /etc/systemd/system/cockroachdb.service
 #   Stops/starts a cockroach node
 
 [Unit]
-Description=Manage a Cockroach cluster node
+Description=Cockroach cluster node
 Requires=network.target
 
 [Service]
 Type=simple
+{% if systemd_restart_on_failure %}
 Restart=on-failure
 RestartSec=10
-{% if cluster_mode|lower == 'insecure' %}
-ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_hostname}} --store={{datastore}} --log-dir={{log_dir}} --insecure
-ExecStop={{install_location}}/cockroach quit --host={{ansible_hostname}}
-{% elif  cluster_mode|lower == 'secure' %}
-ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_hostname}} --store={{datastore}} --log-dir={{log_dir}} --certs-dir={{certs_dir}}
-ExecStop={{install_location}}/cockroach quit --host={{ansible_hostname}} --certs-dir={{certs_dir}}
+{% else %}
 {% endif %}
+ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_fqdn}} --store={{datastore}} --log-dir={{log_dir}} {% if cache is defined %} --cache={{ cache | default(omit)}}{%else%}{%endif%} {% if max_sql_memory is defined %} --max-sql-memory={{ max_sql_memory | default(omit)}}{%else%}{%endif%} {% if locality is defined %}  --locality={{ locality | default(omit)}}{%else%}{%endif%}{% if cluster_mode|lower == 'secure' %} --certs-dir={{certs_dir}}{%else%} --insecure{%endif%}
+ExecStop={{install_location}}/cockroach quit --host={{ansible_fqdn}}{% if cluster_mode|lower == 'secure' %} --certs-dir={{certs_dir}}{%else%} --insecure{%endif%}
 User={{ cockroach_user }}
 
 [Install]

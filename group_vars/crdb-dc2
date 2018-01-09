@@ -1,0 +1,20 @@
+install_version: 1.1.3
+datastore_basedir: /var/lib/cockroachdata
+datastore: "{{ datastore_basedir}}/ds1"
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ install_version }}"
+install_stage: /tmp/cockroach
+cockroach_binaries:
+          unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
+          short_version: "{{ install_version }}"
+          filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
+cluster_mode: insecure
+locality: dc=dc2
+#cockroach_group: crdb-dc1
+prometheus_node: False
+remove_cluster: true
+remove_install_binaries: true
+remove_directories: true
+remove_datastore: true
+remove_user: false
+grafana_node: False

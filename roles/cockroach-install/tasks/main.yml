@@ -63,9 +63,17 @@
   shell: "{{ install_location }}/cockroach version"
   register: cversion
   failed_when:
-        - not cversion.stdout |search ('v{{install_version}}')
-  tags: test
+        - not cversion.stdout |search ('v'~install_version )
+  tags: test_install
 
 - name: print output
   debug: var=cversion.stdout_lines
-  tags: test
+  tags: test_install
+
+- name: Add dotprofile
+  template: src=dotprofile.j2 dest="/home/{{ cockroach_user}}/.profile_cockroach" backup=true
+  tags: install,dotprofile
+
+- name: Make sure profile is loaded
+  lineinfile: dest="/home/{{ cockroach_user}}/.bash_profile" line="source /home/{{ cockroach_user}}/.profile_cockroach" state=present backup=yes
+  tags: install,dotprofile

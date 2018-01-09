@@ -2,7 +2,7 @@
 # defaults file for cockroach
 
 binary_url: https://binaries.cockroachdb.com
-install_version: 1.0.2
+install_version: 1.0.5
 cockroach_port: 26257
 remove_cluster: true
 remove_install_binaries: true
@@ -18,6 +18,8 @@ cockroach_binaries:
           unpacked_version: "cockroach-v{{ install_version }}.linux-amd64"
           filename: "cockroach-v{{ install_version }}.linux-amd64.tgz"
 store: "{{datastore_basedir}}/ds1"
-log_dir: "{{ install_location_base }}"
+log_dir: "{{ install_location_base }}/log"
+certs_dir: "{{ install_location_base }}/certs"
+ca_dir: "{{ install_location_base }}/ca"
 cockroach_user: cockroach
 cockroach_group: cockroach

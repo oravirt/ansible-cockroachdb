@@ -1,0 +1,6 @@
+prometheus_users:
+   - user: prometheus
+     password: $6$Udd3YYk2C2KGDOw4$jpfNsWXbgJ.IeKpEjIF4cVRhZi62xZT37G5oHHlHmGvAkkPHfukE9cgRyjdgui/oqtPodoYbUSSvTeFpwvN270
+     shell: /bin/bash
+     homedir: /home/prometheus
+     state: present

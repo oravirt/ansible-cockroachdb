@@ -1,0 +1,7 @@
+- include: cockroach-install.yml
+  when: cockroach_node
+
+- include: loadbalancer-install.yml
+  when: loadbalancer_node
+
+- include: graph.yml

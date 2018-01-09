@@ -10,7 +10,7 @@ http_port: 8080
 log_dir: "{{ install_location_base }}/log"
 cockroach_user: cockroach
 use_systemd: true
-install_version: 1.0.2
+install_version: 1.0.5
 datastore_basedir: /var/lib/cockroachdata
 datastore: "{{ datastore_basedir}}/ds1"
 install_location_base: /var/lib/cockroach
@@ -24,3 +24,4 @@ cockroach_binaries:
 cluster_mode: insecure
 systemd_config_service: cockroachdb
 systemd_config_path: "/etc/systemd/system/cockroachdb.service"
+systemd_restart_on_failure: True

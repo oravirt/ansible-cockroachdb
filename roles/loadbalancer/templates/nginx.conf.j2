@@ -18,12 +18,12 @@ events {
 
 http {
     upstream lb_admin {
-    {% for host in groups['cockroach'] %}
+    {% for host in groups[cockroach_group] %}
    	server {{ hostvars[host]['ansible_default_ipv4']['address'] }}:8080 ;
     {% endfor %}
     }
     upstream lb_db {
-    {% for host in groups['cockroach'] %}
+    {% for host in groups[cockroach_group] %}
    	server {{ hostvars[host]['ansible_default_ipv4']['address'] }}:26257 ;
     {% endfor %}
     }

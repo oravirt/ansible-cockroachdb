@@ -2,7 +2,7 @@
 # defaults file for cockroach-upgrade
 
 binary_url: https://binaries.cockroachdb.com
-install_version: 1.0.2
+install_version: 1.0.5
 old_version:
 cockroach_port: 26257
 http_port: 8080
@@ -33,3 +33,7 @@ cockroach_binaries:
 cluster_mode: insecure
 systemd_config_service: cockroachdb
 systemd_config_path: "/etc/systemd/system/cockroachdb.service"
+systemd_restart_on_failure: True
+
+# Upgrade specific behaviour: Waits for input before moving on to the next node
+pause_between_nodes: True

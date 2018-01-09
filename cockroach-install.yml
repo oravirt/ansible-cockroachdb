@@ -14,7 +14,14 @@
       - cockroach-install
       - {role: cockroach-certs, when: cluster_mode|lower == 'secure'}
       - cockroach-cluster
+
+  - name: Create DB's and users
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
       - cockroach-db
+      - cockroach-users
+      - cockroach-grants
 
   - name: Handover to systemd
     hosts: "{{ hostgroup }}"

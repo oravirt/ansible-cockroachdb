@@ -1,0 +1,20 @@
+---
+
+  - name: Generic host setup
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - host-setup
+
+  - name: Talk to all nodes
+    hosts: all
+    tasks:
+      - name: talktalk
+        setup:
+        when: cockroach_node
+
+  - name: Configure loadbalancer
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - loadbalancer

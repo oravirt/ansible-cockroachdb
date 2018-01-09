@@ -1,3 +1,4 @@
 ---
 # tasks file for cockroach-db
 - include: "{{ cluster_mode }}.yml"
+  tags: create_db

@@ -2,9 +2,8 @@
 - name: Start master node (insecure)
   cockroach_cluster:
            path={{ install_location }}
-           host={{ ansible_hostname }}
+           host={{ ansible_fqdn }}
            store={{ datastore |default (omit)}}
-           cache={{ cache |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
            locality={{ locality | default(omit) }}
            state=started
@@ -15,11 +14,10 @@
 - name: Start other nodes (insecure)
   cockroach_cluster:
            path={{ install_location }}
-           host={{ ansible_hostname }}
+           host={{ ansible_fqdn }}
            store={{ datastore |default (omit)}}
            join=True
            cluster_master={{ cluster_master }}
-           cache={{ caches |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
            locality={{ locality | default(omit) }}
            state=started

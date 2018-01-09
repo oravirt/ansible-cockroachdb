@@ -33,6 +33,8 @@
   with_items:
       - "{{ log_dir }}"
       - "{{ install_location }}"
+      - "{{ certs_dir }}"
+      - "{{ ca_dir }}"
   when: remove_directories
 
 - name: Remove datastore

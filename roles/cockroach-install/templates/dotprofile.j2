@@ -1,0 +1,1 @@
+alias csql='cockroach sql {%if cluster_mode|lower=='insecure'%}--insecure {%else%}--certs-dir={{ certs_dir}}{%endif%} --host={{ansible_fqdn}}'

@@ -1,0 +1,14 @@
+- name: Add grants (secure)
+  cockroach_privs:
+        name={{ item.0.name }}
+        db={{ item.1.db }}
+        grants={{ item.1.grant }}
+        path={{ install_location }}
+        host={{ inventory_hostname }}
+        certs_dir={{ certs_dir |default (omit)}}
+  with_subelements:
+        - "{{ users }}"
+        - grants
+  when: inventory_hostname == cluster_master and item.1.grant is defined
+  tags: add_grants
+  become_user: "{{ cockroach_user }}"

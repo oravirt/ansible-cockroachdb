@@ -1,0 +1,33 @@
+---
+# tasks file for init
+- name: Install packages
+  package: name={{ item}} state=present
+  with_items:
+      - "{{ packages }}"
+  tags: ntp
+
+- name: Make sure ntp is running
+  service: name=ntpd state=running
+  tags: ntp
+
+- name: Generate /etc/hosts
+  template: src=etc-hosts.j2 dest=/etc/hosts backup=false
+  #with_items: "{{ scan_addresses }}"
+  tags: etc_hosts
+  ignore_errors: true
+  notify: restart dnsmasq
+
+- name: Generate /etc/resolv.conf
+  template: src=resolv.conf.j2 dest=/etc/resolv.conf backup=false
+  tags: etc_resolv_conf
+  ignore_errors: true
+  notify: restart dnsmasq
+
+- name: Generate dnsmasq config
+  template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf backup=true
+  ignore_errors: true
+  tags: dnsmasq
+  notify: restart dnsmasq
+
+- name: Start and enable dnsmasq
+  service: name=dnsmasq state=started enabled=true

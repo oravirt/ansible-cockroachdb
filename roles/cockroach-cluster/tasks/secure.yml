@@ -4,7 +4,6 @@
            path={{ install_location }}
            host={{ ansible_hostname }}
            store={{ datastore |default (omit)}}
-           cache={{ cache |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
            certs_dir={{ certs_dir | default(omit) }}
            locality={{ locality | default(omit) }}
@@ -20,7 +19,6 @@
            store={{ datastore |default (omit)}}
            join=True
            cluster_master={{ cluster_master }}
-           cache={{ caches |default (omit)}}
            log_dir={{ log_dir | default(omit) }}
            certs_dir={{ certs_dir | default(omit) }}
            locality={{ locality | default(omit) }}

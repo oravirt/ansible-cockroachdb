@@ -1,14 +1,13 @@
 - name: Configure cockroach systemd service
-  template: src=cockroachdb.service.j2 dest={{ systemd_config_path }} owner=root mode=644
-  become: true
+  template: src=cockroachdb.service.j2 dest={{ systemd_config_path }} owner=root mode=644 backup=true
   when: use_systemd
   register: systemd_config
-  tags: systemd_config
+  tags: systemd_config,change_systemd
 
 - name: Register cockroachdb systemd service
   systemd: name={{ systemd_config_service }} daemon_reload=yes enabled=yes
   when: use_systemd and systemd_config.changed
-  tags: systemd_config
+  tags: systemd_config,change_systemd
 
 - name: Stop cluster
   cockroach_cluster: path={{ install_location }} host={{ inventory_hostname }} state=stopped

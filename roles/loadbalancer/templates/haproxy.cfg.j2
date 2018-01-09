@@ -14,24 +14,19 @@ global
 
     #
     log         127.0.0.1 local2
-    maxconn     4096
+    maxconn     {{ haproxy_maxconn}}
     stats       socket {{ haproxy_admin_socket }} mode 660 level admin
 
 defaults
-    mode                tcp
-    log                 global
-    option              httplog
-    option              dontlognull
-    timeout connect     10s
-    timeout client      1m
-    timeout server      1m
+ {% for item in haproxy_defaults %}
+   {{ item.key }}
+ {% endfor %}
 
-
-listen adminui
+listen cockroach_adminui
     bind :{{adminui_port}}
     mode http
     balance roundrobin
-{% for host in groups['cockroach'] %}
+{% for host in groups[cockroach_group] %}
 {% if 'virtualbox' in ansible_virtualization_type %}
     server {{ host }} {{ hostvars[host]['ansible_all_ipv4_addresses'][1] }}:{{adminui_port}} check
 {% else %}
@@ -39,11 +34,11 @@ listen adminui
 {% endif %}
 {% endfor %}
 
-listen psql
+listen cockroach_db
     bind :{{cockroach_port}}
     mode tcp
-    balance roundrobin
-{% for host in groups['cockroach'] %}
+    balance {{ cockroach_haproxy_balance }}
+{% for host in groups[cockroach_group] %}
 {% if 'virtualbox' in ansible_virtualization_type %}
     server {{ host }} {{ hostvars[host]['ansible_all_ipv4_addresses'][1] }}:{{cockroach_port}} check
 {% else %}

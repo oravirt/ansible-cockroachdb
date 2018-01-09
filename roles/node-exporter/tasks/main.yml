@@ -1,0 +1,46 @@
+- name: node-exporter | create directories
+  file:
+     name: "{{ item }}"
+     state: directory
+     owner: prometheus
+     group: prometheus
+  with_items:
+      - "{{ stage_ne }}"
+      - "{{ base_install_dir_ne }}"
+      - "{{ version_install_dir_ne }}"
+
+
+- name: node-exporter | download
+  get_url:
+      url: "{{ binary_url_ne }}"
+      dest: "{{ stage_ne }}/{{ item.filename}}"
+  with_items:
+      - "{{ binaries_ne }}"
+  when: install_version_ne == item.version
+
+- name: node-exporter | unpack
+  unarchive:
+       src: "{{ stage_ne }}/{{ item.filename}}"
+       dest: "{{version_install_dir_ne}}"
+       extra_opts: "--strip-components=1"
+       copy: no
+       owner: prometheus
+       group: prometheus
+  with_items:
+       - "{{ binaries_ne }}"
+
+- name: node-exporter | add systemd config
+  template:
+       src: node_exporter.service.j2
+       dest: /etc/systemd/system/node_exporter.service
+       mode: 0644
+       owner: root
+       group: root
+  tags: systemd
+
+- name: node-exporter | start node_exporter
+  systemd:
+      name: node_exporter
+      state: started
+      enabled: true
+  tags: systemd

@@ -1,0 +1,48 @@
+install_version_prometheus: 1.7.1
+download_baseurl_prometheus: https://github.com/prometheus/prometheus/releases/download/
+download_baseurl_prometheus_rules: https://raw.githubusercontent.com/cockroachdb/cockroach/master/monitoring/rules/
+binary_url_prometheus: "{{ download_baseurl_prometheus }}/v{{ install_version_prometheus }}/{{ item.filename}}"
+binaries_prometheus:
+     - {filename: prometheus-1.7.1.linux-amd64.tar.gz, version: 1.7.1 }
+base_install_dir_prometheus: /opt/prometheus
+version_install_dir_prometheus: "{{ base_install_dir_prometheus }}/{{ install_version_prometheus }}"
+rules_dir: "{{ version_install_dir_prometheus }}/rules"
+stage_prometheus: /tmp/prometheus
+prometheus_node: True
+cockroach_scheme: "{% if cluster_mode|lower == 'insecure'%}http{% else %}https{% endif %}"
+cluster_mode: insecure
+ne_target_nodes: "{% if nodeexporter_group is defined %}{% for host in groups[nodeexporter_group] -%}{% if loop.first %}[{% endif %}'{{host}}:9100'{%- if not loop.last -%},{%- endif -%}{%if loop.last %}]{%- endif -%}{%- endfor %}{% else %}[]{% endif %}"
+cr_target_nodes: "{% if cockroach_group is defined %}{% for host in groups[cockroach_group] -%}{% if loop.first %}[{% endif %}'{{host}}:8080'{%- if not loop.last -%},{%- endif -%}{%if loop.last %}]{%- endif -%}{%- endfor %}{% else %}[]{% endif %}"
+hap_target_nodes: "{% if haproxy_group is defined %}{% for host in groups[haproxy_group] -%}{% if loop.first %}[{% endif %}'{{host}}:9101'{%- if not loop.last -%},{%- endif -%}{%if loop.last %}]{%- endif -%}{%- endfor %}{% else %}[]{% endif %}"
+
+rules_prometheus:
+    - {rulename: aggregation.rules, url: "{{ download_baseurl_prometheus_rules}}"}
+
+prometheus_scrape_configs:
+   - job_name: 'prometheus'
+     scrape_interval: 10s
+     scrape_timeout:  10s
+     static_configs:
+       - targets: ['localhost:9090']
+
+   - job_name: 'node_exporter'
+     scrape_interval: 5s
+     static_configs:
+       - targets: "{{ ne_target_nodes }}"
+
+   - job_name: 'haproxy_exporter'
+     scrape_interval: 5s
+     static_configs:
+       - targets: "{{ hap_target_nodes}}"
+
+   - job_name: 'cockroach'
+     metrics_path: '/_status/vars'
+     scheme: "{{ cockroach_scheme}}"
+     tls_config:
+       insecure_skip_verify: true
+     static_configs:
+       - targets: "{{ cr_target_nodes}}"
+         labels:
+              cluster: '{{ cockroach_group}}'
+
+# scheme: "{% if cluster_mode|lower == 'insecure'}'http'{% else %}'https'{% endif %}"

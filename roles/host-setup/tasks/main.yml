@@ -6,7 +6,7 @@
   tags: etc_hosts
 
 - name: Make sure ntp is running
-  service: name=ntpd state=running
+  service: name=ntpd state=started
   tags: ntp
 
 - name: Sync clocks

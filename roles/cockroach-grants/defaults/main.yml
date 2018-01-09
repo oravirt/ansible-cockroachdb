@@ -1,0 +1,11 @@
+databases:
+      - testdb1
+      - bank
+users:
+      - name: testuser
+        grants:
+            - {db: testdb1, grant: ALL}
+
+cluster_mode: insecure
+cluster_master: "{{play_hosts[0]}}"
+cockroach_user: cockroach

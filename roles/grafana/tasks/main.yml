@@ -1,0 +1,38 @@
+- name: grafana | create directories
+  file:
+     name: "{{ item }}"
+     state: directory
+  with_items:
+      - "{{ stage_grafana }}"
+
+- name: grafana | download
+  get_url:
+      url: "{{ binary_url_grafana }}"
+      dest: "{{ stage_grafana }}/{{ item.filename}}"
+  with_items:
+      - "{{ binaries_grafana }}"
+  when: install_version_grafana == item.version
+
+- name: grafana | install
+  yum:
+      name: "{{ stage_grafana }}/{{ item.filename}}"
+      state: present
+  with_items:
+      - "{{ binaries_grafana }}"
+  when: install_version_grafana == item.version
+
+- name: grafana | start grafana
+  systemd:
+      name: grafana-server
+      state: started
+      enabled: true
+  tags: systemd-grafana,start-grafana
+
+
+- name: grafana | download dashboards
+  get_url:
+      url: "{{ item.url }}/{{ item.filename }}"
+      dest: "{{ stage_grafana }}/{{ item.filename}}"
+  with_items:
+      - "{{ dashboards_grafana }}"
+  tags: dashboard_download

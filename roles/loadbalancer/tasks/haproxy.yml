@@ -4,9 +4,9 @@
   when: configure_lb
 
 - name: haproxy | Add haproxy config
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
   notify: Restart haproxy
-  tags: lb
+  tags: lb,haproxy_config
   when: configure_lb
 
 - name: haproxy | Start & Enable haproxy

@@ -1,0 +1,10 @@
+- name: Create user (insecure)
+  cockroach_user:
+        name={{ item.name }}
+        path={{ install_location }}
+        host={{ inventory_hostname }}
+  with_items:
+        - "{{ users }}"
+  when: inventory_hostname == cluster_master and users is defined
+  tags: create_users
+  become_user: "{{ cockroach_user }}"

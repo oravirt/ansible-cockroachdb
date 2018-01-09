@@ -4,3 +4,6 @@ databases:
       - testdb1
       - bank
 cluster_mode: insecure
+install_location: "{{ install_location_base}}/{{ install_version }}"
+install_location_base: /var/lib/cockroach
+install_version: 1.0.5

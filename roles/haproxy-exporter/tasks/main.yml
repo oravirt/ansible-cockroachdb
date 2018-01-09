@@ -1,0 +1,50 @@
+- name: haproxy-exporter | create directories
+  file:
+     name: "{{ item }}"
+     state: directory
+     owner: prometheus
+     group: prometheus
+  with_items:
+      - "{{ stage_hape }}"
+      - "{{ base_install_dir_hape }}"
+      - "{{ version_install_dir_hape }}"
+  tags: haproxy_exporter
+
+
+- name: haproxy-exporter | download
+  get_url:
+      url: "{{ binary_url_hape }}"
+      dest: "{{ stage_hape }}/{{ item.filename}}"
+  with_items:
+      - "{{ binaries_hape }}"
+  when: install_version_hape == item.version
+  tags: haproxy_exporter
+
+- name: haproxy-exporter | unpack
+  unarchive:
+       src: "{{ stage_hape }}/{{ item.filename}}"
+       dest: "{{version_install_dir_hape}}"
+       extra_opts: "--strip-components=1"
+       copy: no
+       owner: prometheus
+       group: prometheus
+  with_items:
+       - "{{ binaries_hape }}"
+  tags: haproxy_exporter
+
+- name: haproxy-exporter | add systemd config
+  template:
+       src: haproxy_exporter.service.j2
+       dest: /etc/systemd/system/haproxy_exporter.service
+       mode: 0644
+       owner: root
+       group: root
+  tags: systemd, haproxy_exporter
+
+
+- name: haproxy-exporter | start node_exporter
+  systemd:
+      name: haproxy_exporter
+      state: started
+      enabled: true
+  tags: systemd, haproxy_exporter

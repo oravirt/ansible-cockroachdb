@@ -10,6 +10,7 @@ cockroach_port: 26257
 adminui_port: 8080
 datastore: "{{ datastore_basedir}}/ds1"
 log_dir: "{{ install_location_base }}/log"
+#locality:
 cockroach_user: cockroach
 use_systemd: true
 cluster_mode: insecure

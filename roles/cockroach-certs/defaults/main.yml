@@ -4,7 +4,7 @@ cluster_master: "{{play_hosts[0]}}"
 cluster_mode: insecure
 install_location_base: /var/lib/cockroach
 install_location: "{{ install_location_base}}/{{ install_version }}"
-install_version: 1.0.2
+install_version: 1.0.5
 install_stage: /tmp/cockroach
 certs_dir: "{{ install_location_base }}/certs"
 ca_dir: "{{ install_location_base }}/ca"

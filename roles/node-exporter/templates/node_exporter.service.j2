@@ -1,0 +1,16 @@
+
+# /etc/systemd/system/node_exporter.service
+
+
+[Unit]
+Description=Node Exporter
+Requires=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=prometheus
+ExecStart={{ version_install_dir_ne }}/node_exporter
+
+[Install]
+WantedBy=default.target

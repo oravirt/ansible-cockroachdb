@@ -1,0 +1,16 @@
+
+# /etc/systemd/system/haproxy_exporter.service
+
+
+[Unit]
+Description=Haproxy Exporter
+Requires=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=root
+ExecStart={{ version_install_dir_hape }}/haproxy_exporter --haproxy.scrape-uri=unix:{{ haproxy_admin_socket }}
+
+[Install]
+WantedBy=default.target

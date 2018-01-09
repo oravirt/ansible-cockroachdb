@@ -1,0 +1,40 @@
+prometheus_node: True
+grafana_node: True
+loadbalancer_node: False
+cockroach_group: crdb-dc1
+haproxy_group: lb
+nodeexporter_group: all
+
+# prometheus_scrape_configs:
+#    - job_name: 'prometheus'
+#      scrape_interval: 10s
+#      scrape_timeout:  10s
+#      static_configs:
+#        - targets: ['localhost:9090']
+#
+#    - job_name: 'node_exporter'
+#      scrape_interval: 5s
+#      static_configs:
+#        - targets:
+#           - crdb-dc1-1.internal.lab:9100
+#           - crdb-dc1-2.internal.lab:9100
+#           - crdb-dc1-3.internal.lab:9100
+#
+#    - job_name: 'haproxy_exporter'
+#      scrape_interval: 5s
+#      static_configs:
+#        - targets:
+#            - lb1.internal.lab:9101
+#
+#    - job_name: 'cockroach'
+#      metrics_path: '/_status/vars'
+#      scheme: "{{ cockroach_scheme}}"
+#      tls_config:
+#        insecure_skip_verify: true
+#      static_configs:
+#        - targets:
+#           - crdb-dc1-1.internal.lab:8080
+#           - crdb-dc1-2.internal.lab:8080
+#           - crdb-dc1-3.internal.lab:8080
+#          labels:
+#               cluster: 'crdb-dc1'

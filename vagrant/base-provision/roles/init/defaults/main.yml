@@ -1,0 +1,5 @@
+---
+# defaults file for init
+packages:
+     - ntp
+     - dnsmasq

@@ -1,0 +1,4 @@
+---
+# tasks file for cockroach-db
+- include: "{{ cluster_mode }}.yml"
+  tags: add_grants

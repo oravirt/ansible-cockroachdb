@@ -1,0 +1,13 @@
+install_version_hape: 0.8.0
+download_baseurl_hape: https://github.com/prometheus/haproxy_exporter/releases/download
+binary_url_hape: "{{ download_baseurl_hape }}/v{{ install_version_hape }}/{{ item.filename}}"
+binaries_hape:
+     - {filename: haproxy_exporter-0.8.0.linux-amd64.tar.gz, version: 0.8.0 }
+base_install_dir_hape: /opt/haproxy_exporter
+version_install_dir_hape: "{{base_install_dir_hape}}/{{ install_version_hape }}"
+stage_hape: /tmp/haproxy-exporter
+#haproxy_group: []
+lb_type: haproxy
+haproxy_stats_port: 50000
+haproxy_stats_uri: '/haproxy_stats'
+haproxy_admin_socket: /var/lib/haproxy/admin.sock

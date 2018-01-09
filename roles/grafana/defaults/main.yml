@@ -1,0 +1,16 @@
+install_version_grafana: 4.5.2
+download_baseurl_grafana: https://s3-us-west-2.amazonaws.com/grafana-releases/release
+binary_url_grafana: "{{ download_baseurl_grafana}}/{{ item.filename}}"
+binaries_grafana:
+     - {filename: grafana-4.4.2-1.x86_64.rpm, version: 4.4.2 }
+     - {filename: grafana-4.5.2-1.x86_64.rpm, version: 4.5.2 }
+dashboards_grafana:
+    - {filename: runtime.json, url: "https://raw.githubusercontent.com/cockroachdb/cockroach/master/monitoring/grafana-dashboards/"}
+    - {filename: storage.json, url: "https://raw.githubusercontent.com/cockroachdb/cockroach/master/monitoring/grafana-dashboards/"}
+    - {filename: sql.json, url: "https://raw.githubusercontent.com/cockroachdb/cockroach/master/monitoring/grafana-dashboards/"}
+    - {filename: replicas.json, url: "https://raw.githubusercontent.com/cockroachdb/cockroach/master/monitoring/grafana-dashboards/"}
+    - {grafana_id: 405, filename: node-exporter-server-metrics.json, url: "https://raw.githubusercontent.com/finn-no/grafana-dashboards/master/node-exporter-server-metrics/"}
+    - {grafana_id: 2428, filename: haproxy-full.json, url: "https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/"}
+
+
+stage_grafana: /tmp/grafana

@@ -1,0 +1,16 @@
+
+# /etc/systemd/system/prometheus.service
+
+
+[Unit]
+Description=Prometheus Server
+Requires=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=prometheus
+ExecStart={{ version_install_dir_prometheus }}/prometheus -config.file={{ version_install_dir_prometheus}}/prometheus.yml -storage.local.path={{ version_install_dir_prometheus}}/data
+
+[Install]
+WantedBy=default.target
