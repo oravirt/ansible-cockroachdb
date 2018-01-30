@@ -39,7 +39,8 @@ def check_database_exists(module, msg, path, host, port, name, certs_dir):
         command += ' --insecure'
     elif certs_dir:
         command += ' --certs-dir=%s' % (certs_dir)
-    command += ' --execute \"show databases \"'
+    command += ' --execute \"SELECT datname FROM pg_catalog.pg_database where lower(datname) = lower(\'%s\') \"' % (name)
+
 
 
     #module.fail_json(msg=command)
@@ -47,7 +48,6 @@ def check_database_exists(module, msg, path, host, port, name, certs_dir):
     #module.exit_json(msg=rc)
     if rc != 0:
         msg[0] = "Something went wrong, stderr: %s" % (stderr)
-
 
     if name.lower() in stdout.lower():
         return True
@@ -62,12 +62,10 @@ def create_database(module, msg, path, host, port, name, certs_dir):
         command += ' --certs-dir=%s' % (certs_dir)
     command += ' --execute \"create database %s\"' % (name)
 
-    #command += ' --execute \"create database %s\"' (name)
 
-    #module.fail_json(msg=command)
     (rc, stdout, stderr) = module.run_command(command)
     if rc != 0:
-        msg[0] = "Creating database %s failed. %s" % (name, stderr)
+        msg[0] = "Creating database %s failed. %s, command: %s" % (name, stderr, command)
         return False
     else:
         return True
