@@ -1,0 +1,12 @@
+- name: Manage Cluster Settings (insecure)
+  cockroach_cluster_settings:
+        name={{ item.name }}
+        value={{ item.value }}
+        path={{ install_location }}
+        host={{ inventory_hostname }}
+        state=present
+  with_items:
+        - "{{ cluster_settings }}"
+  when: inventory_hostname == cluster_master and cluster_settings is defined
+  tags: cluster_settings
+  become_user: "{{ cockroach_user }}"

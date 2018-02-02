@@ -1,0 +1,7 @@
+---
+
+  - name: Cluster Settings
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - cockroach-cluster-settings

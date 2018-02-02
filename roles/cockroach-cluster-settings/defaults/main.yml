@@ -1,0 +1,10 @@
+---
+# defaults file for cockroach-db
+# cluster_settings:
+#        - {name: 'diagnostics.reporting.enabled' , value: False }
+
+cluster_mode: insecure
+cluster_master: "{{play_hosts[0]}}"
+cockroach_user: cockroach
+install_location_base: /var/lib/cockroach
+install_location: "{{ install_location_base}}/{{ install_version }}"
