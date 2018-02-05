@@ -15,6 +15,12 @@
       - {role: cockroach-certs, when: cluster_mode|lower == 'secure'}
       - cockroach-cluster
 
+  - name: Manage Cluster Settings
+    hosts: "{{ hostgroup }}"
+    become: true
+    roles:
+      - cockroach-cluster-settings
+
   - name: Create DB's and users
     hosts: "{{ hostgroup }}"
     become: true

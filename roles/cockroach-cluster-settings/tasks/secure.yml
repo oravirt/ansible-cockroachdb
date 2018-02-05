@@ -1,12 +1,13 @@
-- name: Create users (secure)
-  cockroach_user:
+- name: Manage Cluster Settings (insecure)
+  cockroach_cluster_settings:
         name={{ item.name }}
+        value={{ item.value }}
         path={{ install_location }}
         host={{ inventory_hostname }}
         certs_dir={{ certs_dir |default (omit)}}
         state=present
   with_items:
-        - "{{ users }}"
-  when: inventory_hostname == cluster_master and users is defined
-  tags: create_users
+        - "{{ cluster_settings }}"
+  when: inventory_hostname == cluster_master and cluster_settings is defined
+  tags: cluster_settings
   become_user: "{{ cockroach_user }}"
