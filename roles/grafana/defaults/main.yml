@@ -14,3 +14,10 @@ dashboards_grafana:
 
 
 stage_grafana: /tmp/grafana
+
+prometheus_host: "{{ansible_hostname}}"
+grafana_url: "http://{{ ansible_fqdn}}:3000/api/datasources"
+grafana_username: admin
+grafana_password: admin
+grafana_datasource_name: "prometheus_{{ prometheus_host }}"
+grafana_datasource_url: "http://{{ ansible_fqdn }}:9090"

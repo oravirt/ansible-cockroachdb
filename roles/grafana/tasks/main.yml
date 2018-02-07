@@ -28,6 +28,32 @@
       enabled: true
   tags: systemd-grafana,start-grafana
 
+- name: grafana | wait for Grafana to start
+  wait_for:
+       host: "{{ ansible_fqdn }}"
+       port: 3000
+
+- name: grafana | Add prometheus datasource to Grafana
+  uri:
+    url: "{{ grafana_url}}"
+    method: POST
+    headers:
+        Content-Type: "application/json"
+    body: >
+      {
+       "access": "proxy",
+       "name": "{{ grafana_datasource_name}}",
+       "type": "prometheus",
+       "url": "{{ grafana_datasource_url}}"
+       }
+    body_format: json
+    status_code: 200,409
+    user: "{{ grafana_username }}"
+    password: "{{ grafana_password }}"
+    force_basic_auth: True
+  register: output
+  changed_when: output.status|int == 200
+  tags: grafana_datasource
 
 - name: grafana | download dashboards
   get_url:
@@ -36,3 +62,24 @@
   with_items:
       - "{{ dashboards_grafana }}"
   tags: dashboard_download
+
+- name: grafana | download dashboards (to controlmachine)
+  get_url:
+      url: "{{ item.url }}/{{ item.filename }}"
+      dest: "/tmp/{{ item.filename}}"
+  with_items:
+      - "{{ dashboards_grafana }}"
+  tags: dashboard_download
+  delegate_to: localhost
+
+- name: grafana | prepare after install info
+  template: src=after-install.txt.j2 dest=/tmp/after-install.txt owner=grafana
+  tags: after_install
+
+- name: grafana | print after install info
+  shell: "cat /tmp/after-install.txt"
+  register: after_install
+  tags: after_install
+
+- debug: var=after_install.stdout_lines
+  tags: after_install
