@@ -1,0 +1,8 @@
+- All dashboards are downloded to /tmp/ on the controlmachine"
+- Go to http://{{ ansible_fqdn }}:3000 (or http://{{ansible_host}}:3000 ), log in with admin/admin and import the dashboards"
+- Upper left Corner -> Dashboards -> import dashboard -> Click 'upload .json file'.
+  You can also import the Haproxy & Node Metrics dashboards by entering the 'grafana.com id'.
+  haproxy: 2428
+  node_exporter_metrics: 405
+
+  In any case, use the following datasource: '{{ grafana_datasource_name }}'
