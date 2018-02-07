@@ -15,7 +15,7 @@ Restart=on-failure
 RestartSec=10
 {% else %}
 {% endif %}
-ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_fqdn}} --store={{datastore}} --log-dir={{log_dir}} {% if cache is defined %} --cache={{ cache | default(omit)}}{%else%}{%endif%} {% if max_sql_cache is defined %} --max-sql-memory={{ max_sql_memory | default(omit)}}{%else%}{%endif%} {% if locality is defined %}  --locality={{ locality | default(omit)}}{%else%}{%endif%}{% if cluster_mode|lower == 'secure' %} --certs-dir={{certs_dir}}{%else%} --insecure{%endif%}
+ExecStart={{install_location}}/cockroach start --http-port={{http_port}} --port={{cockroach_port}} --host={{ansible_fqdn}} --store={{datastore}} --log-dir={{log_dir}} {% if cache is defined %} --cache={{ cache | default(omit)}}{%else%}{%endif%} {% if max_sql_memory is defined %} --max-sql-memory={{ max_sql_memory | default(omit)}}{%else%}{%endif%} {% if locality is defined %}  --locality={{ locality | default(omit)}}{%else%}{%endif%}{% if cluster_mode|lower == 'secure' %} --certs-dir={{certs_dir}}{%else%} --insecure{%endif%}
 ExecStop={{install_location}}/cockroach quit --host={{ansible_fqdn}}{% if cluster_mode|lower == 'secure' %} --certs-dir={{certs_dir}}{%else%} --insecure{%endif%}
 User={{ cockroach_user }}
 

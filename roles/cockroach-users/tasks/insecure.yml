@@ -3,6 +3,7 @@
         name={{ item.name }}
         path={{ install_location }}
         host={{ inventory_hostname }}
+        state=present
   with_items:
         - "{{ users }}"
   when: inventory_hostname == cluster_master and users is defined

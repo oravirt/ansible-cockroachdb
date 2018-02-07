@@ -1,4 +1,4 @@
-- name: Manage Cluster Settings (insecure)
+- name: Manage Cluster Settings (secure)
   cockroach_cluster_settings:
         name={{ item.name }}
         value={{ item.value }}
