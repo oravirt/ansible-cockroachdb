@@ -3,6 +3,8 @@
 
 **OUTDATED - NEW README COMING SOON**
 
+**Note**
+* `library` section/folder of this repository is maintained under https://github.com/116davinder/ansible.missing_collection
 
 <b> Requirements:
 
